@@ -1,27 +1,30 @@
-import React from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import SignIn from './pages/SignIn';
-import Chat from './pages/Chat';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import '../src/App.css'
-import PickAvatar from './pages/PickAvatar';
-import Test from '../src/Test';
-// import LogIn from './pages/LogIn';
-// import Register from './pages/Register';
+const express = require("express");
+const cors = require('cors');
+const mongoose = require('mongoose');
+const socketio = require('socket.io');
+const routes = require('./web');
+const messageRoutes = require("./web/messagesRoutes");
 
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/signin' element={<SignIn />} />
-        {/* <Route path='/register' element={<Register />} /> */}
-        {/* <Route path='/login' element={<LogIn />} /> */}
-        <Route path='/' element={<Chat />} />
-        <Route path='/pickavatar' element={<PickAvatar />} />
-        <Route path='/test' element={<Test />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
+const app = express();
+require('dotenv').config();
+const whishlist = ['http://localhost:3000', 'http://localhost:3001'];
+app.use(cors({ origin: whishlist }));
+app.use(express.json());
 
-export default App;
+app.use('/api/auth', routes);
+app.use('/api/messages', messageRoutes);
+
+app.use((req, res) => {
+    const err = new Error('Not Found');
+    err.status = 404;
+    res.send({ 'status': err.status, 'message': 'Not found' });
+});
+
+mongoose.connect(process.env.MONGO_URL).then(() => {
+    console.log('Database connection established!');
+}).catch((err) => {
+    console.log('Error connecting to Database!', err);
+})
+
+app.set('port', Number(process.env.PORT) || 8000);
+module.exports = { app };
