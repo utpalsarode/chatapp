@@ -5,11 +5,14 @@ import { useFormik } from "formik";
 import axios from 'axios';
 import InputTextField from '../components/InputTextFiled';
 import { ApiCall } from '../helper/axios';
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../redux/commonSlice';
 // import * as Yup from "yup";
 // const passwordRules = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
 
 const SignIn = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false)
   const [confirmPass, setConfirmPass] = useState(false)
   const [isLogin, setIsLogin] = useState(false)
@@ -70,8 +73,13 @@ const SignIn = () => {
       let res = await ApiCall('POST', '/login', data);
       if (res.data.status === 'success' && res.data.statusCode === 200) {
         const detailData = res.data.data;
+        const userData = {
+          user_data: detailData.user_data,
+          token: detailData.token
+        }
         localStorage.setItem("user", JSON.stringify(detailData.user_data));
         localStorage.setItem("access-token", JSON.stringify(detailData.token));
+        dispatch(setUserData(userData))
         navigate('/');
       }
     }
