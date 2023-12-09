@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FaUser, FaPhone, FaEnvelope, FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { useFormik } from "formik";
-import axios from 'axios';
 import InputTextField from '../components/InputTextFiled';
 import { ApiCall } from '../helper/axios';
 import { useDispatch } from 'react-redux';

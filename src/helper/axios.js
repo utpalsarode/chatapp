@@ -62,7 +62,7 @@ export const ApiCall = async (method, path, payload, header = null) => {
  * IW0079
  * here flag is true when api call occure and user is not login
  */
-export const GetApiCall = async (method, path, header = [], flag = false) => {
+export const GetApiCall = async (method, path, header = null, flag = false) => {
   // console.log(header, 'headerheader');
   // if (!header['access-token'] && !flag) {
   //   renewToken()

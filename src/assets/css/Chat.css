@@ -1,8 +1,9 @@
-body{
+body {
     background-color: #f4f7f6;
-    margin-top:20px;
+    margin-top: 20px;
     background-color: #1f2029;
 }
+
 .chat-card {
     background: #1f2029;
     transition: .5s;
@@ -14,6 +15,7 @@ body{
     height: 100vh;
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 10%);
 }
+
 .chat-app .people-list {
     width: 280px;
     position: absolute;
@@ -53,7 +55,11 @@ body{
 }
 
 .people-list .chat-list li .name {
-    font-size: 15px
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 150px;
 }
 
 .people-list .chat-list img {
@@ -73,7 +79,7 @@ body{
 
 .people-list .status {
     color: #999;
-    font-size: 13px
+    font-size: 11px;
 }
 
 /* .chat {
@@ -224,6 +230,20 @@ body{
     height: 0
 }
 
+.initalContact {
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.welcomeText {
+    font-size: 50px;
+    font-weight: 600;
+    font-family: math;
+    text-align: center;
+}
+
 @media only screen and (max-width: 767px) {
     .chat-app .people-list {
         height: 465px;
@@ -233,15 +253,19 @@ body{
         left: -400px;
         display: none
     }
+
     .chat-app .people-list.open {
         left: 0
     }
+
     .chat-app .chat {
         margin: 0
     }
+
     .chat-app .chat .chat-header {
         border-radius: 0.55rem 0.55rem 0 0
     }
+
     .chat-app .chat-history {
         height: 300px;
         overflow-x: auto
@@ -253,6 +277,7 @@ body{
         height: 650px;
         overflow-x: auto
     }
+
     .chat-app .chat-history {
         height: 600px;
         overflow-x: auto
@@ -264,6 +289,7 @@ body{
         height: 480px;
         overflow-x: auto
     }
+
     .chat-app .chat-history {
         height: calc(100vh - 350px);
         overflow-x: auto

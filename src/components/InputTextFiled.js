@@ -14,7 +14,7 @@ const InputTextField = ({ height, value, placeholder, name, id, handleChange, la
                 name={name}
                 id={id}
                 onChange={(e) => handleChange(name, toUpperCase ? (e.target.value).toUpperCase() : e.target.value)}
-                onBlur={secondHandleBlur ? () => { handleBlur(name); secondHandleBlur() } : () => handleBlur(name)}
+                onBlur={secondHandleBlur && handleBlur ? () => { handleBlur(name); secondHandleBlur() } : handleBlur ? () => handleBlur(name) : () => { }}
                 autoComplete={autoComplete}
                 type={type}
                 autoFocus={autoFocus}

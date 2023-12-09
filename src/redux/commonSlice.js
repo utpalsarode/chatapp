@@ -17,6 +17,7 @@ export const commonSlice = createSlice({
     },
     setInitialUserData: (state, action) => {
       state.user_data = {}
+      state.token = ''
     }
   }
 })
