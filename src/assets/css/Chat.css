@@ -4,37 +4,68 @@ body {
     background-color: #1f2029;
 }
 
+.input-search-contact {
+    position: fixed!important;
+    top: 0;
+    left: 0;
+    z-index: 99999;
+    width: inherit!important;
+    background-color: inherit;
+    background-color: #1f2029;
+    padding: 10px 24px 10px 10px;
+}
+
+.list-unstyled {
+    margin-top: 40px;
+}
+
 .chat-card {
-    background: #1f2029;
+    /* background: #848484; */
     transition: .5s;
     border: 0;
     /* border-radius: .55rem; */
-    position: relative;
-    width: 100%;
-    overflow-y: scroll;
-    height: 100vh;
+    /* position: relative;
+    width: 100%; */
+    /* overflow-y: scroll; */
+    /* height: 100vh; */
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 10%);
-}
-
-.chat-app .people-list {
-    width: 280px;
-    position: absolute;
-    left: 0;
-    top: 0;
-    padding: 20px;
-    z-index: 7
+    /* display: flex; */
 }
 
 .chat-app .chat {
-    margin-left: 280px;
+    /* margin-left: 280px; */
     border-left: 1px solid #434650;
+}
+
+.chat-app .people-list {
+    /* width: 280px; */
+    /* position: absolute; */
+    /* left: 0;
+    top: 0; */
+    overflow-y: scroll;
+    padding: 20px 10px;
+    height: 100vh;
+    /* z-index: 7 */
 }
 
 .people-list {
     -moz-transition: .5s;
     -o-transition: .5s;
     -webkit-transition: .5s;
-    transition: .5s
+    transition: .5s;
+}
+
+.people-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.people-list::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.people-list::-webkit-scrollbar-thumb {
+    background: #4e4e4e;
+    border-radius: 25px;
 }
 
 .people-list .chat-list li {
@@ -43,7 +74,7 @@ body {
     border-radius: 3px
 }
 
-.people-list .chat-list li:hover {
+.people-list .chat-list li.active {
     background: #dece97;
     cursor: pointer;
     transition: 0.5s linear;
@@ -228,20 +259,6 @@ body {
     content: " ";
     clear: both;
     height: 0
-}
-
-.initalContact {
-    display: flex;
-    height: 100vh;
-    justify-content: center;
-    align-items: center;
-}
-
-.welcomeText {
-    font-size: 50px;
-    font-weight: 600;
-    font-family: math;
-    text-align: center;
 }
 
 @media only screen and (max-width: 767px) {

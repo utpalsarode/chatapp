@@ -15,6 +15,7 @@ const Chat = () => {
   const dispatch = useDispatch();
   const [contacts, setContacts] = useState([]);
   const [filteredContacts, setFilteredContacts] = useState([]);
+  const [activeContacts, setActiveContacts] = useState([]);
   const [currentUser, setCurrentUser] = useState(false);
   const [currentChat, setCurrentChat] = useState(false);
   const [searchUser, setSearchUser] = useState('');
@@ -58,9 +59,9 @@ const Chat = () => {
       {/* <div className="container">
         <div className="row clearfix">
           <div className="col-lg-12"> */}
-      <div className="chat-card chat-app">
-        <div id="plist" className="people-list">
-          <div className="input-group mb-3">
+      <div className="chat-card chat-app row">
+        <div id="plist" className="people-list col-lg-3">
+          <div className="input-group input-search-contact mb-3">
             <span className="input-group-text px-3 py-2 btn"><i className='fs-5'><FaSistrix /></i></span>
             {/* <input type="text" className="form-control" placeholder="Search..." /> */}
 
@@ -75,10 +76,10 @@ const Chat = () => {
               handleChange={(_, value) => { handleSearchUser(value); }}
             />
           </div>
-          <ul className="list-unstyled chat-list mt-2 mb-0">
+          <ul className="list-unstyled chat-list mb-0">
             {!loading && filteredContactsData && filteredContactsData.length ? filteredContactsData.map((item, index) => {
               return (
-                <li className="clearfix" key={index} onClick={() => { setCurrentChat(item); }}>
+                <li className="clearfix chat-contact-user" key={index} onClick={() => { setCurrentChat(item); }}>
                   <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="avatar" />
                   <div className="about">
                     <div className="name">{item.name}</div>
@@ -131,7 +132,7 @@ const Chat = () => {
             </li> */}
           </ul>
         </div>
-        <div className="chat">
+        <div className="chat col-lg-9">
           {currentChat ? <>
             <div className="chat-header clearfix">
               <div className="row">

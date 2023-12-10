@@ -365,3 +365,21 @@ h6 span {
   background: #4e4e4e;
   border-radius: 25px;
 }
+
+.initalContact {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.welcomeText {
+  font-size: 50px;
+  font-weight: 600;
+  font-family: math;
+  text-align: center;
+}
+
+.chat-contact-user {
+  cursor: pointer;
+}
