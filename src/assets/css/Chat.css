@@ -5,11 +5,11 @@ body {
 }
 
 .input-search-contact {
-    position: fixed!important;
+    position: fixed !important;
     top: 0;
     left: 0;
     z-index: 99999;
-    width: inherit!important;
+    width: inherit !important;
     background-color: inherit;
     background-color: #1f2029;
     padding: 10px 24px 10px 10px;
@@ -136,10 +136,24 @@ body {
 }
 
 .chat .chat-history {
-    height: 590px;
+    height: 510px;
     padding: 20px;
     border-bottom: 2px solid #434650;
     background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/1462889/pat.svg');
+    overflow-y: scroll;
+}
+
+.chat .chat-history::-webkit-scrollbar {
+    width: 4px;
+}
+
+.chat .chat-history::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.chat .chat-history::-webkit-scrollbar-thumb {
+    background: #c3c1c1;
+    border-radius: 25px;
 }
 
 .chat .chat-history ul {
@@ -156,7 +170,7 @@ body {
 }
 
 .chat .chat-history .message-data {
-    margin-bottom: 15px
+    margin-bottom: 10px;
 }
 
 .chat .chat-history .message-data img {
@@ -166,12 +180,12 @@ body {
 
 .chat .chat-history .message-data-time {
     color: #6d6e73;
-    padding-left: 6px
-}
+        padding-left: 6px
+    }
 
 .chat .chat-history .message {
     color: #444;
-    padding: 18px 20px;
+    padding: 10px 15px;
     line-height: 26px;
     font-size: 16px;
     border-radius: 7px;
@@ -194,7 +208,8 @@ body {
 }
 
 .chat .chat-history .my-message {
-    background: #efefef
+    background: #efefef;
+    float: right;
 }
 
 .chat .chat-history .my-message:after {
@@ -213,7 +228,7 @@ body {
 
 .chat .chat-history .other-message {
     background: #ffeba7;
-    text-align: right
+    text-align: left
 }
 
 .chat .chat-history .other-message:after {
@@ -261,7 +276,7 @@ body {
     height: 0
 }
 
-@media only screen and (max-width: 767px) {
+/* @media only screen and (max-width: 767px) {
     .chat-app .people-list {
         height: 465px;
         width: 100%;
@@ -299,9 +314,9 @@ body {
         height: 600px;
         overflow-x: auto
     }
-}
+} */
 
-@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 1) {
+/* @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 1) {
     .chat-app .chat-list {
         height: 480px;
         overflow-x: auto
@@ -311,4 +326,4 @@ body {
         height: calc(100vh - 350px);
         overflow-x: auto
     }
-}
+} */

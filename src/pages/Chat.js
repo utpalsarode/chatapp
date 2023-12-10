@@ -4,7 +4,7 @@ import '../assets/css/Chat.css'
 import welcomUserImage from '../assets/images/welcomeUser.gif'
 import { FaCamera, FaCircle, FaGear, FaImage, FaPaperPlane, FaSistrix } from "react-icons/fa6";
 import { TbLogout } from "react-icons/tb";
-import { GetApiCall } from '../helper/axios';
+import { ApiCall, GetApiCall } from '../helper/axios';
 import { useDispatch } from 'react-redux';
 import { setInitialUserData } from '../redux/commonSlice';
 import { useNavigate } from 'react-router-dom';
@@ -16,9 +16,11 @@ const Chat = () => {
   const [contacts, setContacts] = useState([]);
   const [filteredContacts, setFilteredContacts] = useState([]);
   const [activeContacts, setActiveContacts] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [currentUser, setCurrentUser] = useState(false);
   const [currentChat, setCurrentChat] = useState(false);
   const [searchUser, setSearchUser] = useState('');
+  const [typeMessage, setTypeMessage] = useState('');
   const [loading, setLoading] = useState(true);
 
   const fetchContacts = async (id) => {
@@ -53,17 +55,52 @@ const Chat = () => {
       setFilteredContacts(result);
     }
   }
+
+  const getAllMessages = async () => {
+    const data = {
+      from: currentUser.id,
+      to: currentChat._id
+    }
+    let res = await ApiCall('POST', '/get-messages', data);
+    if (res.data.status === 'success' && res.data.statusCode === 200) {
+      const getMessages = res.data.data;
+      setMessages(getMessages);
+    }
+  }
+  console.log('messages', messages);
+
+  useEffect(() => {
+    if (currentChat) {
+      getAllMessages();
+    }
+  }, [currentChat]);
+
+  const addMessage = async () => {
+    const data = {
+      from: currentUser.id,
+      to: currentChat._id,
+      message: typeMessage
+    }
+    let res = await ApiCall('POST', '/add-message', data);
+    if (res.data.status === 'success' && res.data.statusCode === 200) {
+      setTypeMessage('');
+    }
+  }
+
+  const enterMessage = (event) => {
+    if (event.key === 'Enter') {
+      addMessage()
+    }
+  }
+
   const filteredContactsData = searchUser.length > 2 ? filteredContacts : contacts;
   return (
     <>
-      {/* <div className="container">
-        <div className="row clearfix">
-          <div className="col-lg-12"> */}
       <div className="chat-card chat-app row">
-        <div id="plist" className="people-list col-lg-3">
+        <div id="plist" className="people-list col-xl-4 col-lg-3 col-md-4 col-sm-4 col-xs-4">
           <div className="input-group input-search-contact mb-3">
             <span className="input-group-text px-3 py-2 btn"><i className='fs-5'><FaSistrix /></i></span>
-            {/* <input type="text" className="form-control" placeholder="Search..." /> */}
+
 
             <InputTextField
               value={searchUser}
@@ -94,45 +131,9 @@ const Chat = () => {
                 <div className="status"> <i className="fa fa-circle online"><FaCircle /></i> online </div>
               </div>
             </li>}
-
-            {/* <li className="clearfix active">
-              <img src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="avatar" />
-              <div className="about">
-                <div className="name">Aiden Chavez</div>
-                <div className="status"> <i className="fa fa-circle online"><FaCircle /></i> online </div>
-              </div>
-            </li>
-            <li className="clearfix">
-              <img src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="avatar" />
-              <div className="about">
-                <div className="name">Mike Thomas</div>
-                <div className="status"> <i className="fa fa-circle online"><FaCircle /></i> online </div>
-              </div>
-            </li>
-            <li className="clearfix">
-              <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="avatar" />
-              <div className="about">
-                <div className="name">Christian Kelly</div>
-                <div className="status"> <i className="fa fa-circle offline"><FaCircle /></i> left 10 hours ago </div>
-              </div>
-            </li>
-            <li className="clearfix">
-              <img src="https://bootdey.com/img/Content/avatar/avatar8.png" alt="avatar" />
-              <div className="about">
-                <div className="name">Monica Ward</div>
-                <div className="status"> <i className="fa fa-circle online"><FaCircle /></i> online </div>
-              </div>
-            </li>
-            <li className="clearfix">
-              <img src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="avatar" />
-              <div className="about">
-                <div className="name">Dean Henry</div>
-                <div className="status"> <i className="fa fa-circle offline"><FaCircle /></i> offline since Oct 28 </div>
-              </div>
-            </li> */}
           </ul>
         </div>
-        <div className="chat col-lg-9">
+        <div className="chat col-xl-8 col-lg-9 col-md-8 col-sm-8 col-xs-8">
           {currentChat ? <>
             <div className="chat-header clearfix">
               <div className="row">
@@ -155,14 +156,19 @@ const Chat = () => {
             </div>
             <div className="chat-history">
               <ul className="m-b-0">
-                <li className="clearfix">
-                  <div className="message-data text-right">
-                    <span className="message-data-time">10:10 AM, Today</span>
-                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="avatar" />
-                  </div>
-                  <div className="message other-message float-right"> Hi Aiden, how are you? How is the project coming along? </div>
-                </li>
-                <li className="clearfix">
+                {messages && messages.length ? messages.map((message, index) => {
+                  console.log('message', message);
+                  return (
+                    <li className="clearfix" key={index}>
+                      <div className="message-data">
+                        <span className="message-data-time">10:10 AM, Today</span>
+                        <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="avatar" />
+                      </div>
+                      <div className={`message ${message.fromSelf ? 'my-message' : 'other-message'}`}>{message.message}</div>
+                    </li>
+                  )
+                }) : <></>}
+                {/* <li className="clearfix">
                   <div className="message-data">
                     <span className="message-data-time">10:12 AM, Today</span>
                   </div>
@@ -173,13 +179,24 @@ const Chat = () => {
                     <span className="message-data-time">10:15 AM, Today</span>
                   </div>
                   <div className="message my-message">Project has been already finished and I have results to show you.</div>
-                </li>
+                </li> */}
               </ul>
             </div>
             <div className="chat-message sticky-bottom clearfix col-lg-12">
               <div className="input-group">
-                <span className="input-group-text px-3 py-2 btn"><i className="fa fa-send fs-5"><FaPaperPlane /></i></span>
-                <input type="text" className="form-control px-2" placeholder="Enter text here..." />
+                <button className="input-group-text px-3 py-2 btn" onClick={addMessage}><i className="fa fa-send fs-5"><FaPaperPlane /></i></button>
+                <InputTextField
+                  value={typeMessage}
+                  className={'form-control px-2'}
+                  type="text"
+                  id={'searchUser'}
+                  placeholder='Enter text here...'
+                  name='searchUser'
+                  onKeyDown={enterMessage}
+                  autoComplete='on'
+                  handleChange={(_, value) => { setTypeMessage(value); }}
+                />
+                {/* <input type="text" className="form-control px-2" placeholder="Enter text here..." /> */}
               </div>
             </div>
           </> :
@@ -196,9 +213,6 @@ const Chat = () => {
             </div>}
         </div>
       </div>
-      {/* </div>
-        </div>
-      </div> */}
     </>
   )
 }
