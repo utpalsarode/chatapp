@@ -15,6 +15,22 @@ body {
     padding: 10px 24px 10px 10px;
 }
 
+.chat-about .user-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 300px;
+}
+
+.hidden-sm {
+    display: flex;
+    justify-content: end;
+
+    .FiMoreVertical {
+        padding: 0 20px;
+    }
+}
+
 .list-unstyled {
     margin-top: 40px;
 }
@@ -180,8 +196,8 @@ body {
 
 .chat .chat-history .message-data-time {
     color: #6d6e73;
-        padding-left: 6px
-    }
+    padding-left: 6px
+}
 
 .chat .chat-history .message {
     color: #444;

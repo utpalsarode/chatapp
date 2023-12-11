@@ -3,6 +3,8 @@ import '../assets/css/Chat.css'
 // import { Link } from 'react-router-dom'
 import welcomUserImage from '../assets/images/welcomeUser.gif'
 import { FaCamera, FaCircle, FaGear, FaImage, FaPaperPlane, FaSistrix } from "react-icons/fa6";
+import { FiMoreVertical } from 'react-icons/fi'
+import { UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle, Button, Spinner } from 'reactstrap'
 import { TbLogout } from "react-icons/tb";
 import { ApiCall, GetApiCall } from '../helper/axios';
 import { useDispatch } from 'react-redux';
@@ -65,15 +67,25 @@ const Chat = () => {
     if (res.data.status === 'success' && res.data.statusCode === 200) {
       const getMessages = res.data.data;
       setMessages(getMessages);
+    } else {
+      setMessages([]);
     }
   }
-  console.log('messages', messages);
 
   useEffect(() => {
     if (currentChat) {
       getAllMessages();
     }
   }, [currentChat]);
+
+  useEffect(() => {
+    const chatElement = document.querySelector('.chat-history');
+    if (chatElement) {
+      console.log('chatElement', chatElement);
+      // debugger
+      chatElement.scrollTop = chatElement.scrollHeight;
+    }
+  }, [messages])
 
   const addMessage = async () => {
     const data = {
@@ -137,27 +149,36 @@ const Chat = () => {
           {currentChat ? <>
             <div className="chat-header clearfix">
               <div className="row">
-                <div className="col-lg-6">
+                <div className="col-lg-7">
                   <a href="https://www.google.com/" data-toggle="modal" data-target="https://www.google.com/view_info">
                     <img src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="avatar" />
                   </a>
                   <div className="chat-about">
-                    <h6 className="m-b-0">{currentChat ? currentChat.name : 'Aiden Chavez'}</h6>
+                    <h6 className="m-b-0 user-name">{currentChat ? currentChat.name : 'Aiden Chavez'}</h6>
                     <small>Last seen: 2 hours ago</small>
                   </div>
                 </div>
-                <div className="col-lg-6 hidden-sm text-end">
+                <div className="col-lg-5 hidden-sm text-end">
                   <button className="btn btn-outline-secondary fs-5 me-2 p-3"><i className="fa fa-camera"><FaCamera /></i></button>
                   <button className="btn btn-outline-primary fs-5 me-2 p-3"><i className="fa fa-image"></i><FaImage /></button>
                   <button className="btn btn-outline-info fs-5 me-2 p-3"><i className="fa fa-cogs"></i><FaGear /></button>
-                  <button onClick={handleLogout} className="btn btn-outline-warning fs-5 p-3"><i className="fa fa-question"><TbLogout /></i></button>
+                  {/* <button onClick={handleLogout} className="btn btn-outline-warning fs-5 p-3"><i className="fa fa-question"><TbLogout /></i></button> */}
+                  <UncontrolledDropdown>
+                    <DropdownToggle className='icon-btn hide-arrow FiMoreVertical' color='transparent' size='lg'>
+                      <FiMoreVertical size={15} />
+                    </DropdownToggle>
+                    <DropdownMenu className="dropdownmenu-z-index" >
+                      <DropdownItem>
+                        <span className="dropdownitem-font-si" onClick={handleLogout}>Log out</span>
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
                 </div>
               </div>
             </div>
             <div className="chat-history">
               <ul className="m-b-0">
                 {messages && messages.length ? messages.map((message, index) => {
-                  console.log('message', message);
                   return (
                     <li className="clearfix" key={index}>
                       <div className="message-data">
