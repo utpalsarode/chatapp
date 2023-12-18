@@ -5,7 +5,7 @@ const verify = require("../middleware/verify");
 const { addMessage, getAllMessages } = require("../controller/messagesController");
 
 messageRoutes.post('/add-message', addMessage);
-messageRoutes.get('/get-messages', getAllMessages);
+messageRoutes.post('/get-messages', getAllMessages);
 
 
 module.exports = messageRoutes;

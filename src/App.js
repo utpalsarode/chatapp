@@ -12,7 +12,7 @@ app.use(cors({ origin: whishlist }));
 app.use(express.json());
 
 app.use('/api/auth', routes);
-app.use('/api/messages', messageRoutes);
+app.use('/api/auth', messageRoutes);
 
 app.use((req, res) => {
     const err = new Error('Not Found');

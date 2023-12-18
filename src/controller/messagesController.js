@@ -39,7 +39,7 @@ module.exports.getAllMessages = async (req, res, next) => {
         if (detailData.length) {
             return handleSuccess(200, 'succefully get messages', detailData, res);
         } else {
-            return handleError(400, 'failed to get messages', res);
+            return handleError(202, 'failed to get messages', res);
         }
         console.log('Hello world gets all messages', detailData);
     } catch (e) {
