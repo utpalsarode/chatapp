@@ -1,8 +1,9 @@
-function handleError(statusCode, message, res, access_expire = false, refresh_expire = false) {
+function handleError(statusCode, message, res, access_expire = false, refresh_expire = false) {   
     res.status(statusCode).json({
         status: 'error',
         statusCode,
         message,
+        data: [],
         access_expire: access_expire,
         refresh_expire: refresh_expire
     });

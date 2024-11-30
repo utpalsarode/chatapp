@@ -1,7 +1,12 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/chat').then(() => {
-    console.log('Database connection established!');
-}).catch((err) => {
-    console.log('Error connecting to Database!', err);
-})
+const connectDB = async () => {
+    await mongoose.connect(process.env.MONGO_URL).then((conn) => {
+        console.log(`Database connection established: ${conn.connection.host}`);
+    }).catch((err) => {
+        console.log('Error connecting to Database!', err);
+        process.exit();
+    })
+}
+
+module.exports = connectDB;

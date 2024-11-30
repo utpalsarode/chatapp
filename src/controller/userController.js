@@ -3,22 +3,21 @@ const { db } = require('../helper');
 const jwt = require("jsonwebtoken");
 const { handleError, handleSuccess } = require('../helper/response_handler');
 const config = require('../config/config');
+const asyncHandler = require('express-async-handler')
 
 module.exports.login = async (req, res, next) => {
     let { status_code_config: statusCode, en_message_config: en } = config;
     try {
-        let { name, password } = req.body;
-        const userData = await User.findOne({ name: name });
-        // console.log('userData', process.env.SECRET_KEY);
-        // return;
+        let { email, password } = req.body;
+        const userData = await User.findOne({ email });
         if (userData) {
             password = db.getEncryptDecryptData('encrypt', password);
             if (userData.password === password) {
                 let data = {
                     name: userData.name,
-                    id: userData._id,
+                    id: userData._id
                 }
-                jwt.sign(data, process.env.SECRET_KEY, { expiresIn: 1440 * 60 }, (err, security_token) => {
+                jwt.sign(data, config.secret, { expiresIn: '1d' }, (err, security_token) => {
                     if (err) {
                         throw err;
                     } else {
@@ -55,9 +54,9 @@ module.exports.register = async (req, res, next) => {
             email,
             password
         });
-        delete user.password;
+        user.password = undefined;
         console.log('password', user);
-        return handleSuccess(200, 'user created successfully', { status: true, user }, res);
+        return handleSuccess(200, 'Data get successfully!', { status: true, user }, res);
     } catch (err) {
         next(err);
     }
@@ -65,19 +64,21 @@ module.exports.register = async (req, res, next) => {
 
 }
 
-module.exports.allUsers = async (req, res, next) => {
-    try {
-        let { id } = req.params;
-        const users = await User.find({ _id: { $ne: id } }).select([
-            'name',
-            'email',
-            'avatarImage',
-            '_id'
-        ]);
-        return handleSuccess(200, 'user created successfully', users, res);
-    } catch (err) {
-        next(err);
-    }
-
-
-}
+module.exports.allUsers = asyncHandler(async (req, res) => {
+    let { id } = req.params;
+    const { search } = req.query;
+    console.log('res.locals.user_id', res.locals.user_id)    
+    const keyword = search ? {
+        $or: [
+            { name: { $regex: search, $options: "i"} },
+            { email: { $regex: search, $options: "i"} }
+        ]
+    } : {}
+    const users = await User.find(keyword).find({ _id: { $ne: id } }).select([
+        'name',
+        'email',    
+        'avatarImage',
+        '_id'
+    ]);
+    return handleSuccess(200, config.en_message_config.DATA_FETCH_SUCCESSFULLY, users, res);
+})

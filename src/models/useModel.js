@@ -25,7 +25,7 @@ const usersSchema = new mongoose.Schema({
     },
     avatarImage: {
         type: String,
-        default: ""
+        default: "https://img.freepik.com/free-psd/3d-icon-social-media-app_23-2150049569.jpg?semt=ais_hybrid"
     }
 });
 

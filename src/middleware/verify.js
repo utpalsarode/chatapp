@@ -11,19 +11,20 @@ const verifyToken = (req, res, next) => {
             token = Buffer.from(token, 'base64').toString('utf8');
             jwt.verify(token, config.secret, function (err, decoded) {
                 if (err) {
-                    handleError(statusCode.UNAUTHORIZED, en.ERROR_NOT_VALID_TOKEN, res);
+                    console.log('err', err)
+                    return handleError(statusCode.UNAUTHORIZED, en.ERROR_NOT_VALID_TOKEN, res);
                 } else {
                     if (decoded) {
                         res.locals.user_id = parseInt(decoded?.id);
                         res.locals.user_name = decoded?.user_name;
                         next();
                     } else {
-                        handleError(statusCode.BAD_REQUEST, en.ERROR_SOMETHING_WRONG, res);
+                        return handleError(statusCode.BAD_REQUEST, en.ERROR_SOMETHING_WRONG, res);
                     }
                 }
             });
         } else {
-            handleError(statusCode.BAD_REQUEST, en.ERROR_NO_FOUND_TOKEN, res);
+            return handleError(statusCode.BAD_REQUEST, en.ERROR_NO_FOUND_TOKEN, res);
         }
     } else {
         next();
