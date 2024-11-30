@@ -15,6 +15,8 @@ import InputTextField from '../components/InputTextFiled';
 const Chat = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const userData = JSON.parse(localStorage.getItem('user'));
+  const token = localStorage.getItem('access-token');
   const [contacts, setContacts] = useState([]);
   const [filteredContacts, setFilteredContacts] = useState([]);
   const [activeContacts, setActiveContacts] = useState([]);
@@ -25,8 +27,9 @@ const Chat = () => {
   const [typeMessage, setTypeMessage] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const fetchContacts = async (id) => {
-    let res = await GetApiCall('GET', `/getAllUsers/${id}`);
+  const fetchContacts = async (id, query = '') => {
+    const url = query ? `/getAllUsers/${id}?search=${query}` : `/getAllUsers/${id}`
+    let res = await GetApiCall('GET', url, { authentication: token });
     if (res.data.status === 'success' && res.data.statusCode === 200) {
       const contactsData = res.data.data;
       setContacts(contactsData);
@@ -36,8 +39,8 @@ const Chat = () => {
 
   useEffect(() => {
     if (localStorage.getItem('user')) {
-      setCurrentUser(JSON.parse(localStorage.getItem('user')));
-      fetchContacts(JSON.parse(localStorage.getItem('user')).id);
+      setCurrentUser(userData);
+      fetchContacts(userData.id);
     } else {
       navigate('/signin');
     }
@@ -48,10 +51,16 @@ const Chat = () => {
     dispatch(setInitialUserData());
   };
 
-  const handleSearchUser = (value) => {
+  const handleSearchUser = async (value) => {
     setSearchUser(value);
+    let res = await GetApiCall('GET', `/user-search`);
+    if (res.data.status === 'success' && res.data.statusCode === 200) {
+      const contactsData = res.data.data;
+      console.log('contactsData', contactsData)      
+      setFilteredContacts(contactsData);
+    }
     if (value && value.length > 2 && contacts.length) {
-      var result = contacts.filter(obj => {
+      const result = contacts.filter(obj => {
         return ((obj.name).toLowerCase()).includes(value)
       })
       setFilteredContacts(result);
@@ -122,7 +131,7 @@ const Chat = () => {
               placeholder='Search...'
               name='searchUser'
               autoComplete='on'
-              handleChange={(_, value) => { handleSearchUser(value); }}
+              handleChange={(_, value) => { setSearchUser(value); value.length > 2 && fetchContacts(userData.id, value) }}
             />
           </div>
           <ul className="list-unstyled chat-list mb-0">

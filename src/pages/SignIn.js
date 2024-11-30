@@ -52,7 +52,7 @@ const SignIn = () => {
       if (res.data.status === 'success' && res.data.statusCode === 200) {
         const detailData = res.data.data;
         localStorage.setItem("user", JSON.stringify(detailData.user));
-        navigate('/');
+        setIsLogin(true);
       } else {
 
       }
@@ -66,7 +66,7 @@ const SignIn = () => {
     try {
       // await axios.post("http://localhost:5000/api/auth/login", { name: formik.values.email, password: formik.values.password })
       const data = {
-        name: formik.values.email,
+        email: formik.values.email,
         password: formik.values.password
       }
       let res = await ApiCall('POST', '/login', data);
@@ -77,7 +77,7 @@ const SignIn = () => {
           token: detailData.token
         }
         localStorage.setItem("user", JSON.stringify(detailData.user_data));
-        localStorage.setItem("access-token", JSON.stringify(detailData.token));
+        localStorage.setItem("access-token", detailData.token);
         dispatch(setUserData(userData))
         navigate('/');
       }
@@ -172,7 +172,7 @@ const SignIn = () => {
                             <input type={confirmPass ? 'text' : 'password'} name="confirm_pass" className="form-style" value={formik.values.confirm_pass} onChange={(e) => formik.setFieldValue('confirm_pass', e.target.value)} placeholder="Confirm Password" id="confirm_pass" autoComplete="off" />
                             <i className="input-icon uil uil-lock-alt" onClick={handleConfirmPass}>{confirmPass ? <FaRegEyeSlash /> : <FaRegEye />}</i>
                           </div>
-                          <button className="btn mt-4" type='submit' onClick={formik.handleSubmit}>submit</button>
+                          <button className="btn mt-4" type='submit' onClick={() => { setIsLogin(false); formik.handleSubmit(); }}>submit</button>
                         </div>
                       </div>
                     </div>
