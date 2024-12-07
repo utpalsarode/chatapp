@@ -28,9 +28,9 @@ const renewToken = () => {
   window.location.href = '/signin'
 }
 export const ApiCall = async (method, path, payload, header = null) => {
-  // if (header && !header['access-token']) {
-  //   renewToken()
-  // } else {
+  if (header && !header['authentication']) {
+    renewToken()
+  } else {
     try {
       const responce = await service.request({
         method,
@@ -56,17 +56,16 @@ export const ApiCall = async (method, path, payload, header = null) => {
         return error.response
       }
     }
-  // }
+  }
 }
 /**
  * IW0079
  * here flag is true when api call occure and user is not login
  */
 export const GetApiCall = async (method, path, header = null, flag = false) => {
-  // console.log(header, 'headerheader');
-  // if (!header['access-token'] && !flag) {
-  //   renewToken()
-  // } else {
+  if (!header['authentication'] && !flag) {
+    renewToken()
+  } else {
     try {
       const responce = await service.request({
         method,
@@ -89,5 +88,5 @@ export const GetApiCall = async (method, path, header = null, flag = false) => {
         return error.response
       }
     }
-  // }
+  }
 }

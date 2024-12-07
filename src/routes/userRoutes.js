@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import SignIn from '../pages/SignIn';
-import Chat from '../pages/Chat';
+import Chat from '../pages/chat/Chat';
 import PickAvatar from '../pages/PickAvatar';
 import Test from '../Test';
 

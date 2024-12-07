@@ -15,7 +15,7 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [confirmPass, setConfirmPass] = useState(false)
   const [isLogin, setIsLogin] = useState(false)
-  const [initialValues, setInitialValues] = useState({
+  const [initialValues] = useState({
     username: '',
     reg_email: '',
     mobile_no: '',
@@ -76,7 +76,7 @@ const SignIn = () => {
           user_data: detailData.user_data,
           token: detailData.token
         }
-        localStorage.setItem("user", JSON.stringify(detailData.user_data));
+        localStorage.setItem("userData", JSON.stringify(detailData.user_data));
         localStorage.setItem("access-token", detailData.token);
         dispatch(setUserData(userData))
         navigate('/');

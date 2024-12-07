@@ -19,7 +19,7 @@ const Login = () => {
             <h2 className="text-center text-light mt-5">Login Form</h2>
             <div className="text-center mb-4 text-light">Chatter: Beacause It Matter</div>
             <div className="card my-3">
-              <form className="card-body cardbody-color p-lg-3">
+              <form className="card-body cardbody-color p-lg-3">  
 
                 <div className="text-center">
                   <img src="https://cdn3.iconfinder.com/data/icons/essential-rounded/64/Rounded-31-512.png" className="img-fluid profile-image-pic img-thumbnail rounded-circle my-3"
