@@ -62,8 +62,8 @@ const Chat = () => {
   
   return (
     <div className="chat-app row">
-      <ChatSidebar setCurrentChat={setCurrentChat}/>
-      <div className="col-xl-8 col-lg-9 col-md-8">
+      <ChatSidebar currentChat={currentChat} setCurrentChat={setCurrentChat}/>
+      <div className="col-xl-9 col-lg-9 col-md-8">
         {currentChat ? (
           <ChatWindow
             currentChat={currentChat}

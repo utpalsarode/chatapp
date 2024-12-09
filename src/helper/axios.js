@@ -73,11 +73,14 @@ export const GetApiCall = async (method, path, header = null, flag = false) => {
         responseType: 'json',
         headers: header
       })
+      console.log('free', !header['authentication'] && !flag)
+      console.log('responce', responce)      
       return responce
-    } catch (error) {
+    } catch (error) {      
       if (error.message === 'Network Error') {
         console.log(`${error}, Server is not responding, please try again after some time`)
       }
+      console.log('error.response?.data?.statusCode', error.response?.data?.statusCode, error.response.data)      
       if (error.response?.data?.statusCode === 401) {
         if (error.response.data.access_expire) {
           renewToken()
