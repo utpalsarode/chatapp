@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   user_data: {},
-  token: ''
+  token: '',
+  chatState: {}
 }
 
 
@@ -15,6 +16,11 @@ export const commonSlice = createSlice({
       state.user_data = user_data
       state.token = token
     },
+    setChatState: (state, action) => {
+      console.log('action.payload', action.payload);
+          
+      state.chatState = action.payload
+    },
     setInitialUserData: (state, action) => {
       state.user_data = {}
       state.token = ''
@@ -23,6 +29,6 @@ export const commonSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setUserData, setInitialUserData } = commonSlice.actions
+export const { setUserData, setInitialUserData, setChatState } = commonSlice.actions
 
 export default commonSlice.reducer

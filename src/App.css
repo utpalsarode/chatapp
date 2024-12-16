@@ -295,7 +295,7 @@ h6 span {
   transition: all 200ms linear;
 }
 
-.btn {
+.plist .btn {
   border-radius: 4px;
   height: 44px;
   font-size: 13px;
@@ -382,4 +382,27 @@ h6 span {
 
 .chat-contact-user {
   cursor: pointer;
+}
+
+.user-profile-content {
+  text-align: center;
+}
+
+.user-profile-image {
+  height: 200px;
+  width: 200px;
+  border-radius: 50%;
+}
+
+.user-profile-avatar {
+  display: flex;
+  justify-content: center;
+}
+
+.main-header li {
+  list-style-type: none;
+}
+
+.user-search-header:focus {
+  box-shadow: unset;
 }

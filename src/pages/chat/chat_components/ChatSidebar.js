@@ -8,36 +8,65 @@ import {
   DropdownMenu,
   DropdownItem,
   DropdownToggle,
+  Button,
 } from 'reactstrap';
 import ContactsList from './ContactsList';
 import useDebounce from '../../../hooks/useDebounce';
 import { GetApiCall } from '../../../helper/axios';
+import { Toaster, toaster } from '../../../components/ui/toaster';
+import GroupModal from '../../../components/GroupModal';
 
-const ChatSidebar = ({ currentChat, setCurrentChat }) => {
+const ChatSidebar = ({ currentUser, currentChat, setCurrentChat }) => {
   const userData = JSON.parse(localStorage.getItem('userData'));
   const token = localStorage.getItem('access-token');
   const [searchUser, setSearchUser] = useState('');
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
 
   const debouncedSearchUser = useDebounce(searchUser, 500);
+
+  const handleGroupModal = () => setIsGroupModalOpen(!isGroupModalOpen)
+
+  // const fetchContacts = useCallback(async (searchQuery = '') => {
+  //   setLoading(true);
+  //   try {
+  //     const url = searchQuery
+  //       ? `/getAllUsers/${userData.id}?search=${searchQuery}`
+  //       : `/getAllUsers/${userData.id}`;
+  //     const res = await GetApiCall('GET', url, { authentication: token });
+  //     if (res.data.status === 'success' && res.data.statusCode === 200) {
+  //       setContacts(res.data.data);
+  //     } else {
+  //       setContacts([]);
+  //     }
+  //   } catch (error) {
+  //     toaster.error({
+  //       description: 'Error fetching contacts!',
+  //       type: 'info',
+  //       duration: 2000,
+  //     });
+  //     console.error('Error fetching contacts:', error);
+  //     setContacts([]);
+  //   }
+  //   setLoading(false);
+  // }, []);
 
   const fetchContacts = useCallback(async (searchQuery = '') => {
     setLoading(true);
     try {
-      // const response = await fetch(
-      //   `/api/getAllUsers?search=${encodeURIComponent(searchQuery)}`,
-      // );
-      const url = searchQuery
-        ? `/getAllUsers/${userData.id}?search=${searchQuery}`
-        : `/getAllUsers/${userData.id}`;
-      const res = await GetApiCall('GET', url, { authentication: token });
+      const res = await GetApiCall('GET', '/chat', { authentication: token });
       if (res.data.status === 'success' && res.data.statusCode === 200) {
         setContacts(res.data.data);
       } else {
         setContacts([]);
       }
     } catch (error) {
+      toaster.error({
+        description: 'Error fetching contacts!',
+        type: 'info',
+        duration: 2000,
+      });
       console.error('Error fetching contacts:', error);
       setContacts([]);
     }
@@ -68,7 +97,7 @@ const ChatSidebar = ({ currentChat, setCurrentChat }) => {
           />
         </div>
         <div>
-          <UncontrolledDropdown>
+          {/* <UncontrolledDropdown>
             <DropdownToggle
               className="icon-btn hide-arrow FiMoreVertical"
               color="transparent"
@@ -86,14 +115,25 @@ const ChatSidebar = ({ currentChat, setCurrentChat }) => {
                 </div>
               </DropdownItem>
             </DropdownMenu>
-          </UncontrolledDropdown>
+          </UncontrolledDropdown> */}
+          <Button onClick={handleGroupModal}>
+            <BsFillChatLeftTextFill size={15} />
+          </Button>
         </div>
       </div>
       <ContactsList
         contacts={contacts}
+        currentUser={currentUser}
         currentChat={currentChat}
         setCurrentChat={setCurrentChat}
         loading={loading}
+      />
+      <Toaster />
+
+      <GroupModal
+        open={isGroupModalOpen}
+        toggle={handleGroupModal}
+        title='Create Group Chat'
       />
     </div>
   );

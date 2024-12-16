@@ -8,10 +8,6 @@ body {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-
-  .btn {
-    padding: 0 20px;
-  }
 }
 
 .input-search-contact {
@@ -335,6 +331,12 @@ body {
 .dropdown-item.active, .dropdown-item:active {
    background-color: #ffeba7 !important;
    color: black !important;
+}
+
+.group-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
 }
 
 /* @media only screen and (max-width: 767px) {
