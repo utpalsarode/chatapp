@@ -73,8 +73,6 @@ export const GetApiCall = async (method, path, header = null, flag = false) => {
         responseType: 'json',
         headers: header
       })
-      console.log('free', !header['authentication'] && !flag)
-      console.log('responce', responce)      
       return responce
     } catch (error) {      
       if (error.message === 'Network Error') {

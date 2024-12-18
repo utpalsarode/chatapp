@@ -12,7 +12,7 @@ import {
 } from 'reactstrap';
 import ContactsList from './ContactsList';
 import useDebounce from '../../../hooks/useDebounce';
-import { GetApiCall } from '../../../helper/axios';
+import { ApiCall, GetApiCall } from '../../../helper/axios';
 import { Toaster, toaster } from '../../../components/ui/toaster';
 import GroupModal from '../../../components/GroupModal';
 
@@ -26,7 +26,9 @@ const ChatSidebar = ({ currentUser, currentChat, setCurrentChat }) => {
 
   const debouncedSearchUser = useDebounce(searchUser, 500);
 
-  const handleGroupModal = () => setIsGroupModalOpen(!isGroupModalOpen)
+  const handleGroupModal = () => {
+    setIsGroupModalOpen(!isGroupModalOpen);
+  };
 
   // const fetchContacts = useCallback(async (searchQuery = '') => {
   //   setLoading(true);
@@ -133,7 +135,8 @@ const ChatSidebar = ({ currentUser, currentChat, setCurrentChat }) => {
       <GroupModal
         open={isGroupModalOpen}
         toggle={handleGroupModal}
-        title='Create Group Chat'
+        title="Create Group Chat"
+        setContacts={setContacts}
       />
     </div>
   );

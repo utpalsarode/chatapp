@@ -100,7 +100,6 @@ export const Chat = () => {
     dispatch(setInitialUserData());
     navigate('/signin');
   };
-  console.log('rednering chat.js', currentUser);
 
   return (
     <div>

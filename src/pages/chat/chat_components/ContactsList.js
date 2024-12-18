@@ -5,7 +5,6 @@ import { Skeleton, SkeletonCircle } from '../../../components/ui/skeleton';
 
 const ContactsList = React.memo(
   ({ contacts, currentUser, currentChat, setCurrentChat, loading }) => {
-    console.log('Rendering ContactsList');
 
     if (loading) {
       return <For each={[1, 2, 3]}>
@@ -46,7 +45,6 @@ const ContactsList = React.memo(
             key={index}
             className="chat-contact-user"
           >
-            {console.log('chat.latestMessage', chat.latestMessage)}
             {/* <Text>
             {!chat.isGroupChat
               ? getSender(loggedUser, chat.users)

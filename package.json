@@ -31,7 +31,6 @@
     "react-router": "6.20.0",
     "react-router-dom": "6.20.1",
     "react-scripts": "5.0.1",
-    "react-select": "^5.9.0",
     "reactstrap": "9.2.1",
     "redux": "4.2.1",
     "socket.io-client": "^4.7.5",

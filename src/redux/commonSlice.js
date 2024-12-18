@@ -16,9 +16,7 @@ export const commonSlice = createSlice({
       state.user_data = user_data
       state.token = token
     },
-    setChatState: (state, action) => {
-      console.log('action.payload', action.payload);
-          
+    setChatState: (state, action) => {        
       state.chatState = action.payload
     },
     setInitialUserData: (state, action) => {
