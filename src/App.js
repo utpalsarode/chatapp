@@ -2,12 +2,15 @@ import React from 'react';
 import Router from './routes/userRoutes';
 import { store } from './redux/store';
 import { Provider } from 'react-redux';
+import ChatProvider from './pages/ChatProvider';
 
 function App() {
   return (
-    <Provider store={store}>
-      <Router />
-    </Provider>
+    <ChatProvider>
+      <Provider store={store}>
+        <Router />
+      </Provider>
+    </ChatProvider>
   );
 }
 

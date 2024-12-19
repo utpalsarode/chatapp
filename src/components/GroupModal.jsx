@@ -13,9 +13,11 @@ import { Toaster, toaster } from './ui/toaster';
 import useDebounce from '../hooks/useDebounce';
 import { Box } from '@chakra-ui/react';
 import UserBadgeItem from './UserBadgeItem';
+import { ChatState } from '../pages/ChatProvider';
 
-const GroupModal = ({ open, toggle, title = '', setContacts }) => {
+const GroupModal = ({ open, toggle, title = '' }) => {
   const token = localStorage.getItem('access-token');
+  const { setChats } = ChatState();
   const [groupName, setGroupName] = useState('');
   const [userSearch, setUserSearch] = useState('');
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -69,7 +71,8 @@ const GroupModal = ({ open, toggle, title = '', setContacts }) => {
   }, [debouncedSearchUser]);
 
   const handleDelete = (delUser) => {
-    setSelectedUsers(selectedUsers.filter((sel) => sel._id !== delUser._id));
+    console.log('delUser', delUser);    
+    setSelectedUsers((selectedUsers) => selectedUsers.filter((sel) => sel._id !== delUser._id));
   };
 
   const handleCreateChat = async () => {
@@ -82,7 +85,7 @@ const GroupModal = ({ open, toggle, title = '', setContacts }) => {
         authentication: token,
       });
       if (res.data.status === 'success' && res.data.statusCode === 200) {
-        setContacts((chats) => [res.data.data, ...chats]);
+        setChats((chats) => [res.data.data, ...chats]);
         toggle();
       }
     } catch (error) {
@@ -93,7 +96,8 @@ const GroupModal = ({ open, toggle, title = '', setContacts }) => {
       });
     }
   };
-
+  console.log('selectedUsers', selectedUsers);
+  
   return (
     <>
       <Modal isOpen={open} toggle={toggle} centered size="md">
@@ -120,7 +124,7 @@ const GroupModal = ({ open, toggle, title = '', setContacts }) => {
                   <UserBadgeItem
                     key={u._id}
                     user={u}
-                    handleFunction={() => handleDelete(u)}
+                    handleFunction={handleDelete}
                   />
                 ))}
               </Box>

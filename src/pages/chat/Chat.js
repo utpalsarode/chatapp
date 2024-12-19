@@ -6,7 +6,6 @@ import ChatSidebar from './chat_components/ChatSidebar';
 import ChatWindow from './chat_components/ChatWindow';
 import WelcomeMessage from './chat_components/WelcomeMessage';
 import { ApiCall } from '../../helper/axios';
-import { Tooltip } from '../../components/ui/tooltip';
 import { Avatar, AvatarGroup } from '../../components/ui/avatar';
 import { setChatState, setInitialUserData } from '../../redux/commonSlice';
 import { FaAngleDown, FaSearch, FaBell } from 'react-icons/fa';
@@ -28,12 +27,13 @@ import {
   Input,
 } from 'reactstrap';
 import ProfileModal from '../../components/Modal';
+import { ChatState } from '../ChatProvider';
 
 export const Chat = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { user } = ChatState();
   const [selectedChat, setSelectedChat] = useState('');
-  const [user, setUser] = useState({});
   const [notification, setNotification] = useState([]);
   const [chats, setChats] = useState([]);
 
@@ -109,7 +109,7 @@ export const Chat = () => {
             <Button>
               <FaSearch />
             </Button>
-            <Input className='user-search-header' />
+            <Input className="user-search-header" />
           </InputGroup>
         </Nav>
         <Nav className="me-auto" navbar>
@@ -163,7 +163,13 @@ export const Chat = () => {
         </div>
       </div>
 
-      <ProfileModal open={isProfileOpen} handleChange={toggle} title={'My Profile'} email={currentUser?.email} src={currentUser?.user_image} />
+      <ProfileModal
+        open={isProfileOpen}
+        handleChange={toggle}
+        title={'My Profile'}
+        email={currentUser?.email}
+        src={currentUser?.user_image}
+      />
     </div>
   );
 };
