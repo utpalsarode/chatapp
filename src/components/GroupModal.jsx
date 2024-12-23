@@ -71,7 +71,6 @@ const GroupModal = ({ open, toggle, title = '' }) => {
   }, [debouncedSearchUser]);
 
   const handleDelete = (delUser) => {
-    console.log('delUser', delUser);    
     setSelectedUsers((selectedUsers) => selectedUsers.filter((sel) => sel._id !== delUser._id));
   };
 
@@ -96,7 +95,6 @@ const GroupModal = ({ open, toggle, title = '' }) => {
       });
     }
   };
-  console.log('selectedUsers', selectedUsers);
   
   return (
     <>

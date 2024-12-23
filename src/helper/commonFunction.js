@@ -1,127 +1,157 @@
 /* eslint-disable no-var */
 // var sha256 = require('js-sha256').sha256
-import moment from 'moment'
+import moment from 'moment';
 
 const convertToBoolean = (binary_value) => {
-   if (binary_value === 0 || binary_value === '0') {
-      return false
-   } else {
-      return true
-   }
-}
+  if (binary_value === 0 || binary_value === '0') {
+    return false;
+  } else {
+    return true;
+  }
+};
 
 const convertToBinary = (boolean) => {
-   if (boolean === true) {
-      return 1
-   } else {
-      return 0
-   }
-}
+  if (boolean === true) {
+    return 1;
+  } else {
+    return 0;
+  }
+};
 
 function checkStrExistInArray(str, array) {
-   for (let i = 0; i < array.length; i++) {
-      if (array[i].includes(str)) {
-         return true
-      } else {
-         return false
-      }
-   }
+  for (let i = 0; i < array.length; i++) {
+    if (array[i].includes(str)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 /**
  * IW0077
  * This function is called when user get cookies
  */
 function getCookie(key) {
-   const data = document.cookie
-      .split('; ')
-      .find(row => row.startsWith(key))
-   if (data) {
-      return data.split('=')[1]
-   }
+  const data = document.cookie.split('; ').find((row) => row.startsWith(key));
+  if (data) {
+    return data.split('=')[1];
+  }
 }
 
 function getJsDate(date, format = 'DD-MM-YYYY') {
-   const splitDate = date.split('-')
-   switch (format) {
-      case 'DD-MM-YYYY':
-         return new Date(splitDate[2], Number(splitDate[1]) - 1, splitDate[0])
-      case 'MM-DD-YYYY':
-         return new Date(splitDate[2], Number(splitDate[0]) - 1, splitDate[1])
-      case 'YYYY-MM-DD':
-         return new Date(splitDate[0], Number(splitDate[1]) - 1, splitDate[2])
-      default:
-         break
-   }
-   return new Date()
+  const splitDate = date.split('-');
+  switch (format) {
+    case 'DD-MM-YYYY':
+      return new Date(splitDate[2], Number(splitDate[1]) - 1, splitDate[0]);
+    case 'MM-DD-YYYY':
+      return new Date(splitDate[2], Number(splitDate[0]) - 1, splitDate[1]);
+    case 'YYYY-MM-DD':
+      return new Date(splitDate[0], Number(splitDate[1]) - 1, splitDate[2]);
+    default:
+      break;
+  }
+  return new Date();
 }
 function chnageDateSeparator(date = '', existing_separator, replace_separator) {
-   return date.replaceAll(existing_separator, replace_separator)
+  return date.replaceAll(existing_separator, replace_separator);
 }
 
 function getTime(date) {
-   return new Date(date).getTime()
+  return new Date(date).getTime();
 }
 
 function getJsTime(jsDate) {
-   return (jsDate).getTime()
+  return jsDate.getTime();
 }
 
 function handlePageRefresh(event) {
-   const e = event || window.event
-   // Cancel the event
-   e.preventDefault()
-   if (e) {
-      e.returnValue = '' // Legacy method for cross browser support
-   }
-   return '' // Legacy method for cross browser support
+  const e = event || window.event;
+  // Cancel the event
+  e.preventDefault();
+  if (e) {
+    e.returnValue = ''; // Legacy method for cross browser support
+  }
+  return ''; // Legacy method for cross browser support
 }
 function debounce(fn, time) {
-   let timer
-   return function (...args) {
-      clearTimeout(timer)
-      timer = setTimeout(() => {
-         fn(...args)
-      }, time)
-   }
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn(...args);
+    }, time);
+  };
 }
 
 const advertiseDateCheck = (from_date, to_date) => {
-   let dateCheck = moment(new Date()).format("YYYY-MM-DD")
-   let fromdate = moment(new Date(from_date)).format("YYYY-MM-DD")
-   let todate = moment(new Date(to_date)).format("YYYY-MM-DD")
+  let dateCheck = moment(new Date()).format('YYYY-MM-DD');
+  let fromdate = moment(new Date(from_date)).format('YYYY-MM-DD');
+  let todate = moment(new Date(to_date)).format('YYYY-MM-DD');
 
-   if (dateCheck >= fromdate && dateCheck <= todate) {
-      return true
-   } else {
-      return false
-   }
-}
+  if (dateCheck >= fromdate && dateCheck <= todate) {
+    return true;
+  } else {
+    return false;
+  }
+};
 
 // find days,year,month ago function
 const findDaysDiffrent = (fromDate) => {
-   let CreatedDate = new Date(fromDate);
-   let today = new Date();
-   let requiredDiffrentDays;
+  let CreatedDate = new Date(fromDate);
+  let today = new Date();
+  let requiredDiffrentDays;
 
-   const oneDay = 24 * 60 * 60 * 1000;
-   const diffDays = Math.round(Math.abs((CreatedDate - today) / oneDay));
+  const oneDay = 24 * 60 * 60 * 1000;
+  const diffDays = Math.round(Math.abs((CreatedDate - today) / oneDay));
 
-   if (diffDays >= 360) {
-      requiredDiffrentDays =
-         Math.floor(diffDays / 360) === 1
-            ? `${Math.floor(diffDays / 365)} year ago`
-            : `${Math.floor(diffDays / 365)} years ago`;
-   } else if (diffDays >= 30) {
-      requiredDiffrentDays =
-         Math.floor(diffDays / 30) === 1
-            ? `${Math.floor(diffDays / 30)} month ago`
-            : `${Math.floor(diffDays / 30)} months ago`;
-   } else if (diffDays < 30) {
-      requiredDiffrentDays =
-         diffDays === 1 || diffDays === 0 ? `Today` : `${diffDays} days ago`;
-   }
-   return requiredDiffrentDays;
+  if (diffDays >= 360) {
+    requiredDiffrentDays = Math.floor(diffDays / 360) === 1 ? `${Math.floor(diffDays / 365)} year ago` : `${Math.floor(diffDays / 365)} years ago`;
+  } else if (diffDays >= 30) {
+    requiredDiffrentDays = Math.floor(diffDays / 30) === 1 ? `${Math.floor(diffDays / 30)} month ago` : `${Math.floor(diffDays / 30)} months ago`;
+  } else if (diffDays < 30) {
+    requiredDiffrentDays = diffDays === 1 || diffDays === 0 ? `Today` : `${diffDays} days ago`;
+  }
+  return requiredDiffrentDays;
+};
+
+function getMessageDate(date = new Date()) {
+  return moment(date).calendar(null, {
+    sameDay: '[Today at] LT',
+    nextDay: '[Tomorrow at] LT',
+    nextWeek: 'dddd [at] LT',
+    lastDay: '[Yesterday at] LT',
+    lastWeek: 'dddd [at] LT',
+    sameElse: 'DD MMMM YYYY [at] hh:mm A',
+  });
 }
+
+const isSameSenderMargin = (messages, m, i, userId) => {
+  // console.log(i === messages.length - 1);
+
+  if (i < messages.length - 1 && messages[i + 1].sender._id === m.sender._id && messages[i].sender._id !== userId) return 33;
+  else if (
+    (i < messages.length - 1 && messages[i + 1].sender._id !== m.sender._id && messages[i].sender._id !== userId) ||
+    (i === messages.length - 1 && messages[i].sender._id !== userId)
+  )
+    return 0;
+  else return 'auto';
+};
+
+const isSameSender = (messages, m, i, userId) => {
+  return (
+    i < messages.length - 1 &&
+    (messages[i + 1].sender._id !== m.sender._id || messages[i + 1].sender._id === undefined) &&
+    messages[i].sender._id !== userId
+  );
+};
+
+const isLastMessage = (messages, i, userId) => {
+  return i === messages.length - 1 && messages[messages.length - 1].sender._id !== userId && messages[messages.length - 1].sender._id;
+};
+
+const isSameUser = (messages, m, i) => {
+  return i > 0 && messages[i - 1].sender._id === m.sender._id;
+};
 
 // function supportScript(data) {
 //    // eslint-disable-next-line no-use-before-define
@@ -140,4 +170,22 @@ const findDaysDiffrent = (fromDate) => {
 //       }
 //    }
 // }
-export { convertToBoolean, convertToBinary, checkStrExistInArray, getCookie, getJsDate, getTime, getJsTime, handlePageRefresh, chnageDateSeparator, debounce, advertiseDateCheck, findDaysDiffrent }
+export {
+  convertToBoolean,
+  convertToBinary,
+  checkStrExistInArray,
+  getCookie,
+  getJsDate,
+  getTime,
+  getJsTime,
+  handlePageRefresh,
+  chnageDateSeparator,
+  debounce,
+  advertiseDateCheck,
+  findDaysDiffrent,
+  getMessageDate,
+  isSameSenderMargin,
+  isLastMessage,
+  isSameSender,
+  isSameUser,
+};

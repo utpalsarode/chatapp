@@ -6,8 +6,10 @@ import { Button } from 'reactstrap';
 import ContactsList from './ContactsList';
 import { Toaster, toaster } from '../../../components/ui/toaster';
 import GroupModal from '../../../components/GroupModal';
+import { ChatState } from '../../ChatProvider';
 
-const ChatSidebar = ({ currentUser, currentChat, setCurrentChat }) => {
+const ChatSidebar = () => {
+  const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
   const [searchUser, setSearchUser] = useState('');
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
 
@@ -40,7 +42,7 @@ const ChatSidebar = ({ currentUser, currentChat, setCurrentChat }) => {
   // }, []);
 
   return (
-    <div id="plist" className="people-list col-xl-3 col-lg-3 col-md-4">
+    <div id="plist" className="people-list chat-sidebar">
       <div className="user-input-search">
         <div className="input-search-contact">
           <span className="search-btn">
@@ -82,18 +84,9 @@ const ChatSidebar = ({ currentUser, currentChat, setCurrentChat }) => {
           </Button>
         </div>
       </div>
-      <ContactsList
-        searchUser={searchUser}
-        currentUser={currentUser}
-        currentChat={currentChat}
-        setCurrentChat={setCurrentChat}
-      />
+      <ContactsList searchUser={searchUser} />
 
-      <GroupModal
-        open={isGroupModalOpen}
-        toggle={handleGroupModal}
-        title="Create Group Chat"
-      />
+      <GroupModal open={isGroupModalOpen} toggle={handleGroupModal} title="Create Group Chat" />
 
       <Toaster />
     </div>

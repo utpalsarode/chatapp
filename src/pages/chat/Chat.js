@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import ChatSidebar from './chat_components/ChatSidebar';
 import ChatWindow from './chat_components/ChatWindow';
 import WelcomeMessage from './chat_components/WelcomeMessage';
-import { ApiCall } from '../../helper/axios';
+import { ApiCall, GetApiCall } from '../../helper/axios';
 import { Avatar, AvatarGroup } from '../../components/ui/avatar';
 import { setChatState, setInitialUserData } from '../../redux/commonSlice';
 import { FaAngleDown, FaSearch, FaBell } from 'react-icons/fa';
@@ -30,17 +30,10 @@ import ProfileModal from '../../components/Modal';
 import { ChatState } from '../ChatProvider';
 
 export const Chat = () => {
+  const token = localStorage.getItem('access-token');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = ChatState();
-  const [selectedChat, setSelectedChat] = useState('');
-  const [notification, setNotification] = useState([]);
-  const [chats, setChats] = useState([]);
-
-  const [messages, setMessages] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [currentChat, setCurrentChat] = useState(null);
-  const [typeMessage, setTypeMessage] = useState('');
+  const { selectedChat, user } = ChatState();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const toggle = () => setIsProfileOpen(!isProfileOpen);
@@ -48,52 +41,31 @@ export const Chat = () => {
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem('userData'));
     if (!userInfo) navigate('/');
-    dispatch(
-      setChatState({
-        selectedChat,
-        user: userInfo,
-        notification,
-        chats,
-      }),
-    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedChat, user, notification, chats]);
-
-  useEffect(() => {
-    if (localStorage.getItem('userData')) {
-      setCurrentUser(JSON.parse(localStorage.getItem('userData')));
-    } else {
-      navigate('/signin');
-    }
   }, []);
 
-  const getAllMessages = async () => {
-    const data = {
-      from: currentUser.id,
-      to: currentChat._id,
-    };
-    let res = await ApiCall('POST', '/get-messages', data);
-    setMessages(res.data.status === 'success' ? res.data.data : []);
-  };
+  // const getAllMessages = async () => {
+  //   let res = await GetApiCall('GET', `/messages?chatId=${selectedChat._id}`, { authentication: token });
+  //   setMessages(res.data.status === 'success' ? res.data.data : []);
+  // };
 
-  const addMessage = async () => {
-    const data = {
-      from: currentUser.id,
-      to: currentChat._id,
-      message: typeMessage,
-    };
-    let res = await ApiCall('POST', '/add-message', data);
-    if (res.data.status === 'success' && res.data.statusCode === 200) {
-      setTypeMessage('');
-      getAllMessages();
-    }
-  };
+  // const addMessage = async () => {
+  //   const data = {
+  //     chatId: selectedChat._id,
+  //     message: typeMessage,
+  //   };
+  //   let res = await ApiCall('POST', '/messages', data);
+  //   if (res.data.status === 'success' && res.data.statusCode === 200) {
+  //     setTypeMessage('');
+  //     getAllMessages();
+  //   }
+  // };
 
-  useEffect(() => {
-    if (currentChat) {
-      getAllMessages();
-    }
-  }, [currentChat]);
+  // useEffect(() => {
+  //   if (selectedChat && Object.keys(selectedChat).length) {
+  //     getAllMessages();
+  //   }
+  // }, [selectedChat]);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -131,7 +103,7 @@ export const Chat = () => {
         <UncontrolledDropdown nav inNavbar>
           <DropdownToggle nav>
             <NavbarText>
-              <Avatar size="sm" name={currentUser?.name} />
+              <Avatar size="sm" name={user?.name} />
             </NavbarText>
           </DropdownToggle>
           <DropdownMenu end>
@@ -140,36 +112,12 @@ export const Chat = () => {
           </DropdownMenu>
         </UncontrolledDropdown>
       </Navbar>
-      <div className="chat-app row">
-        <ChatSidebar
-          currentUser={currentUser}
-          currentChat={currentChat}
-          setCurrentChat={setCurrentChat}
-        />
-        <div className="col-xl-9 col-lg-9 col-md-8">
-          {currentChat ? (
-            <ChatWindow
-              currentChat={currentChat}
-              messages={messages}
-              typeMessage={typeMessage}
-              setTypeMessage={setTypeMessage}
-              addMessage={addMessage}
-              currentUser={currentUser}
-              handleLogout={handleLogout}
-            />
-          ) : (
-            <WelcomeMessage currentUser={currentUser} />
-          )}
-        </div>
+      <div className={`chat-app ${selectedChat && Object.keys(selectedChat).length ? "show-chat" : ""}`}>
+        <ChatSidebar />
+        <div className="chat-content chat">{selectedChat && Object.keys(selectedChat).length ? <ChatWindow /> : <WelcomeMessage />}</div>
       </div>
 
-      <ProfileModal
-        open={isProfileOpen}
-        handleChange={toggle}
-        title={'My Profile'}
-        email={currentUser?.email}
-        src={currentUser?.user_image}
-      />
+      <ProfileModal open={isProfileOpen} handleChange={toggle} title={'My Profile'} email={user?.email} src={user?.user_image} />
     </div>
   );
 };

@@ -3,16 +3,16 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 const ChatContext = createContext();
 
 const ChatProvider = ({ children }) => {
-  const [selectedChat, setSelectedChat] = useState();
-  const [user, setUser] = useState();
+  const [selectedChat, setSelectedChat] = useState({});
+  const [user, setUser] = useState({});
   const [notification, setNotification] = useState([]);
-  const [chats, setChats] = useState();
+  const [chats, setChats] = useState([]);
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('userData'));
     setUser(userData);
 
-    if (!userData) window.location.href = '/';
+    // if (!userData) window.location.href = '/signin';
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localStorage.getItem('userData')]);
 

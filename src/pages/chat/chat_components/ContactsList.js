@@ -5,85 +5,84 @@ import { ChatState } from '../../ChatProvider';
 import useDebounce from '../../../hooks/useDebounce';
 import { GetApiCall } from '../../../helper/axios';
 import { Toaster, toaster } from '../../../components/ui/toaster';
+import LazyImage from '../../../components/LazyImage';
 
-const ContactsList = React.memo(
-  ({ searchUser, currentUser, currentChat, setCurrentChat }) => {
-    const token = localStorage.getItem('access-token');
-    const { selectedChat, setSelectedChat, user, chats, setChats } =
-      ChatState();
-    const [loading, setLoading] = useState(false);
+const ContactsList = React.memo(({ searchUser }) => {
+  const token = localStorage.getItem('access-token');
+  const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
+  const [loading, setLoading] = useState(false);
+  const debouncedSearchUser = useDebounce(searchUser, 500);
 
-    const debouncedSearchUser = useDebounce(searchUser, 500);
-
-    const fetchContacts = useCallback(async (searchQuery = '') => {
-      setLoading(true);
-      try {
-        const res = await GetApiCall('GET', '/chat', { authentication: token });
-        if (res.data.status === 'success' && res.data.statusCode === 200) {
-          setChats(res.data.data);
-        } else {
-          setChats([]);
-        }
-      } catch (error) {
-        toaster.error({
-          description: 'Error fetching contacts!',
-          type: 'info',
-          duration: 2000,
-        });
-        console.error('Error fetching contacts:', error);
+  const fetchContacts = useCallback(async (searchQuery = '') => {
+    setLoading(true);
+    try {
+      const res = await GetApiCall('GET', '/chat', { authentication: token });
+      if (res.data.status === 'success' && res.data.statusCode === 200) {
+        setChats(res.data.data);
+      } else {
         setChats([]);
       }
-      setLoading(false);
-    }, []);
-
-    // Fetch contacts whenever the debounced search term changes
-    useEffect(() => {
-      fetchContacts(debouncedSearchUser);
-    }, [debouncedSearchUser, fetchContacts]);
-
-    if (loading) {
-      return (
-        <For each={[1, 2, 3]}>
-          {(item) => (
-            <HStack gap="10" marginY={2} paddingInline={3} gapX={2} key={item}>
-              <SkeletonCircle size="11" />
-              <Stack flex="1">
-                <Skeleton height="4" width="40%" />
-                <Skeleton height="4" width="40%" />
-              </Stack>
-            </HStack>
-          )}
-        </For>
-      );
+    } catch (error) {
+      toaster.error({
+        description: 'Error fetching contacts!',
+        type: 'info',
+        duration: 2000,
+      });
+      console.error('Error fetching contacts:', error);
+      setChats([]);
     }
+    setLoading(false);
+  }, []);
 
-    if (!chats?.length) {
-      return (
-        <li className="clearfix py-4">
-          <div className="text-center">No results found</div>
-        </li>
-      );
-    }
+  // Fetch contacts whenever the debounced search term changes
+  useEffect(() => {
+    fetchContacts(debouncedSearchUser);
+  }, [debouncedSearchUser, fetchContacts]);
 
-    const getSender = (loggedUser, users) => {
-      return users[0]?._id === loggedUser?._id ? users[1].name : users[0].name;
-    };
-
+  if (loading) {
     return (
-      <Stack className="chat-list" pt={2}>
-        {chats.map((chat, index) => (
-          <Box
-            onClick={() => setCurrentChat(chat)}
-            cursor="pointer"
-            bg={currentChat === chat ? '#ffeba7' : 'transparent'}
-            color={currentChat === chat ? 'black' : 'white'}
-            px={3}
-            py={2}
-            borderRadius="lg"
-            key={index}
-            className="chat-contact-user"
-          >
-            {/* <Text>
+      <For each={[1, 2, 3]}>
+        {(item) => (
+          <HStack gap="10" marginY={2} paddingInline={3} gapX={2} key={item}>
+            <SkeletonCircle size="11" />
+            <Stack flex="1">
+              <Skeleton height="4" width="40%" />
+              <Skeleton height="4" width="40%" />
+            </Stack>
+          </HStack>
+        )}
+      </For>
+    );
+  }
+
+  if (!chats?.length) {
+    return (
+      <li className="clearfix py-4">
+        <div className="text-center">No results found</div>
+      </li>
+    );
+  }
+
+  const getSender = (loggedUser, users) => {
+    return users[0]?._id === loggedUser?._id ? users[1].name : users[0].name;
+  };
+
+  return (
+    <Stack className="chat-list" pt={2}>
+      {chats.map((chat, index) => (
+        <Box
+          onClick={() => setSelectedChat(chat)}
+          cursor="pointer"
+          bg={selectedChat === chat ? '#ffeba7' : 'transparent'}
+          color={selectedChat === chat ? 'black' : 'white'}
+          px={3}
+          py={2}
+          borderRadius="lg"
+          key={index}
+          className="chat-contact-user"
+          display={'flex'}
+        >
+          {/* <Text>
             {!chat.isGroupChat
               ? getSender(loggedUser, chat.users)
               : chat.chatName}
@@ -96,14 +95,22 @@ const ContactsList = React.memo(
                 : chat.latestMessage.content}
             </Text>
               )} */}
-            <img
+          <LazyImage
+            src={chat.avatarImage ?? 'https://bootdey.com/img/Content/avatar/avatar1.png'}
+            placeholder="https://bootdey.com/img/Content/avatar/avatar1.png"
+            alt="Example"
+            width="45px"
+            height="45px"
+          />
+          {/* <img
               src={
                 chat.avatarImage ??
                 'https://bootdey.com/img/Content/avatar/avatar1.png'
               }
+              loading="lazy"
               alt="avatar"
-            />
-            {/* <Text>
+            /> */}
+          {/* <Text>
                   {!chat.isGroupChat
                     ? getSender(currentUser, chat.users)
                     : chat.chatName}
@@ -115,31 +122,24 @@ const ContactsList = React.memo(
                       ? chat.latestMessage.content.substring(0, 51) + "..."
                       : chat.latestMessage.content}
                   </Text>)} */}
-            <div className="about">
-              <div className="name">
-                {!chat.isGroupChat
-                  ? getSender(currentUser, chat.users)
-                  : chat.chatName}
-              </div>
-              <div className="status d-flex gap-1 align-items-center">
-                {/* <FaCircle className="fa-circle offline" /> left 7 mins ago */}
-                {chat.latestMessage && (
-                  <p fontSize="xs">
-                    <b>{chat.latestMessage.sender.name} : </b>
-                    {chat.latestMessage.content.length > 50
-                      ? chat.latestMessage.content.substring(0, 51) + '...'
-                      : chat.latestMessage.content}
-                  </p>
-                )}
-              </div>
+          <div className="about">
+            <div className="name">{!chat.isGroupChat ? getSender(user, chat.users) : chat.chatName}</div>
+            <div className="status d-flex gap-1 align-items-center">
+              {/* <FaCircle className="fa-circle offline" /> left 7 mins ago */}
+              {chat.latestMessage && (
+                <p fontSize="xs">
+                  <b>{chat.latestMessage.sender?.name} : </b>
+                  {chat.latestMessage.message?.length > 50 ? chat.latestMessage.message.substring(0, 51) + '...' : chat.latestMessage.message}
+                </p>
+              )}
             </div>
-          </Box>
-        ))}
-        {/* </ul> */}
-        <Toaster />
-      </Stack>
-    );
-  },
-);
+          </div>
+        </Box>
+      ))}
+      {/* </ul> */}
+      <Toaster />
+    </Stack>
+  );
+});
 
 export default ContactsList;
