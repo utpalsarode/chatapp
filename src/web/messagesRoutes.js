@@ -4,8 +4,8 @@ const { userController } = require("../controller");
 const verify = require("../middleware/verify");
 const { addMessage, getAllMessages } = require("../controller/messagesController");
 
-messageRoutes.post('/add-message', addMessage);
-messageRoutes.post('/get-messages', getAllMessages);
+messageRoutes.post('/', addMessage);
+messageRoutes.get('/', getAllMessages);
 
 
 module.exports = messageRoutes;

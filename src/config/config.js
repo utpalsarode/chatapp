@@ -61,6 +61,7 @@ const config = {
         'PASSWORD_UPDATE_SUCCESSFULLY': 'password update successfully!',
         'PASSWORD_NOT_MATCH': 'password not matched!',
         'WRONG_PASSWORD': 'wrong password!',
+        'ERROR_FILL_ALL_FIELDS': 'Please fill all the fields!',
     },
     'ALLOWED_IMG_TYPE': ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'image/webp'],
     "editor_url": process.env.EDITOR_URL,

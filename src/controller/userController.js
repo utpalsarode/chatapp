@@ -1,4 +1,4 @@
-const User = require('../models/useModel');
+const User = require('../models/userModel');
 const { db } = require('../helper');
 const jwt = require("jsonwebtoken");
 const { handleError, handleSuccess } = require('../helper/response_handler');
@@ -10,11 +10,14 @@ module.exports.login = async (req, res, next) => {
     try {
         let { email, password } = req.body;
         const userData = await User.findOne({ email });
+        console.log('userData', userData);
+        
         if (userData) {
             password = db.getEncryptDecryptData('encrypt', password);
             if (userData.password === password) {
                 let data = {
                     name: userData.name,
+                    email: userData.email,
                     id: userData._id
                 }
                 jwt.sign(data, config.secret, { expiresIn: '1d' }, (err, security_token) => {
@@ -23,7 +26,7 @@ module.exports.login = async (req, res, next) => {
                     } else {
                         res.setHeader("security_token", Buffer.from(security_token).toString('base64'));
                         let return_data = {
-                            user_data: data,
+                            user_data: { ...data, user_image: userData.avatarImage },
                             token: Buffer.from(security_token).toString('base64')
                         };
                         return handleSuccess(statusCode.OK, en.LOGIN_SUCESSFULLY, return_data, res);
@@ -65,16 +68,14 @@ module.exports.register = async (req, res, next) => {
 }
 
 module.exports.allUsers = asyncHandler(async (req, res) => {
-    let { id } = req.params;
-    const { search } = req.query;
-    console.log('res.locals.user_id', res.locals.user_id)    
+    const { search } = req.query;    
     const keyword = search ? {
         $or: [
             { name: { $regex: search, $options: "i"} },
             { email: { $regex: search, $options: "i"} }
         ]
     } : {}
-    const users = await User.find(keyword).find({ _id: { $ne: id } }).select([
+    const users = await User.find(keyword).find({ _id: { $ne: res.locals.user_id } }).select([
         'name',
         'email',    
         'avatarImage',
