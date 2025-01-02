@@ -10,32 +10,53 @@ const io = require('socket.io')(server, {
     origin: 'http://localhost:3000',
   },
 });
-// console.log('io', io);
 
+const onlineUsers = new Map();
 io.on('connection', (socket) => {
-  console.log('User connected===================> ', socket.id);
-
   socket.on('message', () => console.log('welcome to socket messages.'));
   socket.on('setup', (userData) => {
-    console.log('userData', userData);
     socket.join(userData.id);
     socket.emit('connected');
+    onlineUsers.set(userData.id, socket.id);    
   });
 
   socket.on('Join Chat', (room) => {
-    console.log('room', room);
     socket.join(room);
   });
 
+  socket.on('typing', (room) => socket.in(room).emit('typing'));
+  socket.on('stop typing', (room) => socket.in(room).emit('stop typing'));
+
   socket.on("new message", (newMessage) => {
     let chat = newMessage.chat;
+    if (chat.isGroupChat) {
+      // Handle group chat messages
+      chat.users.forEach((user) => {
+        if (user._id !== newMessage.sender._id && onlineUsers.has(user._id)) {
+          socket.in(onlineUsers.get(user._id)).emit("message received", newMessage);
+        }
+      });
+    } else {
+      // Handle one-to-one chat messages
+      const recipientId = chat.users.find((user) => user._id !== newMessage.sender._id);
+      if (onlineUsers.has(recipientId)) {
+        socket.in(onlineUsers.get(recipientId)).emit("message received", newMessage);
+      }
+    }
+  });
 
-    if (!chat.users) return console.log("users not defined!");
-
-    chat.users.forEach(user => {
-        if (user._id === newMessage.sender._id) return;
-
-        socket.in(user._id).emit('message received', newMessage);   
-    });
+  socket.off('setup', () => {
+    socket.leave(userData.id);
   })
+  
+  // Disconnect user
+  socket.on("disconnect", () => {
+    onlineUsers.forEach((value, key) => {
+      if (value === socket.id) {
+        onlineUsers.delete(key);
+      }
+    });
+    console.log("A user disconnected:", socket.id);
+  });
+
 });
