@@ -13,6 +13,7 @@ import moment from 'moment';
 import { getMessageDate } from '../../../helper/commonFunction';
 import ScrollableChat from './ScrollableChat';
 import { IoMdArrowBack } from 'react-icons/io';
+import typingAnimeImage from '../../../assets/images/typingAnime.gif';
 
 import { nodeApi } from '../../../helper/commonApi';
 import { io } from 'socket.io-client';
@@ -20,30 +21,41 @@ import { io } from 'socket.io-client';
 const ENDPOINT = 'http://localhost:5000';
 var socket, selectedChatCompare;
 
-const ChatWindow = () => {
-  const { selectedChat, setSelectedChat, user } = ChatState();
+const ChatWindow = ({ fetchDataAgain, setFetchDataAgain }) => {
+  const { selectedChat, setSelectedChat, user, notification, setNotification } = ChatState();
   const token = localStorage.getItem('access-token');
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [typeMessage, setTypeMessage] = useState('');
-  console.log('messages', messages);
-
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  
   useEffect(() => {
     socket = io(ENDPOINT);
     socket.emit('message', 'hello world.');
     socket.emit('setup', user);
-  }, []);
+    socket.on('connected', () => setSocketConnected(true));
+    socket.on('typing', () => setIsTyping(true));
+    socket.on('stop typing', () => setIsTyping(false));
+  }, [user]);
 
   useEffect(() => {
-    socket.on('message received', (newMessage) => {
-      if (!selectedChatCompare || selectedChatCompare._id !== newMessage.chat._id) {
-      } else {
-        setMessages([...messages, newMessage]);
-      }
-    });
-  });
+    if (socket) {
+      socket.on('message received', (newMessage) => {
+        if (!selectedChatCompare || selectedChatCompare._id !== newMessage.chat._id) {
+          if (!notification.includes(newMessage)) {
+            setNotification((notification) => [newMessage, ...notification]);
+            setFetchDataAgain((fetchDataAgain) => !fetchDataAgain);
+          }
+        } else {
+          setMessages((messages) => [...messages, newMessage]);
+        }
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const chatElement = document.querySelector('.chat-history');
@@ -62,6 +74,7 @@ const ChatWindow = () => {
 
   const addMessage = async () => {
     if (!typeMessage) return;
+    socket.emit('stop typing', selectedChat._id);
     const data = {
       chatId: selectedChat._id,
       message: typeMessage,
@@ -92,6 +105,29 @@ const ChatWindow = () => {
     dispatch(setInitialUserData());
     navigate('/signin');
   };
+
+  const handleTyping = (value) => {
+    setTypeMessage(value);
+    if (!socketConnected) return;
+
+    if (!typing) {
+      setTyping(true);
+      socket.emit('typing', selectedChat._id);
+    }
+
+    debounceStopTyping();
+  };
+
+  const debounceStopTyping = (() => {
+    let timer;
+    return () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        setTyping(false);
+        socket.emit('stop typing', selectedChat._id);
+      }, 2000);
+    };
+  })();
 
   return (
     <>
@@ -164,6 +200,9 @@ const ChatWindow = () => {
       <div className={`messages chat-history ${!messages.length ? 'no-message-box' : ''}`}>
         <ScrollableChat messages={messages} loading={loading} />
       </div>
+      <div className={`typing-indicator ${isTyping ? 'show' : ''}`}>
+        <img src={typingAnimeImage} alt="typing" />
+      </div>
       <div className="chat-message">
         <div className="input-group">
           <button className="input-group-text btn" onClick={addMessage}>
@@ -177,7 +216,7 @@ const ChatWindow = () => {
             name="message"
             onKeyDown={enterMessage}
             autoComplete="on"
-            handleChange={(_, value) => setTypeMessage(value)}
+            handleChange={(_, value) => handleTyping(value)}
           />
         </div>
       </div>

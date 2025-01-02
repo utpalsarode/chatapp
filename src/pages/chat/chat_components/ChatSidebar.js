@@ -8,7 +8,7 @@ import { Toaster, toaster } from '../../../components/ui/toaster';
 import GroupModal from '../../../components/GroupModal';
 import { ChatState } from '../../ChatProvider';
 
-const ChatSidebar = () => {
+const ChatSidebar = ({ fetchDataAgain }) => {
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
   const [searchUser, setSearchUser] = useState('');
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
@@ -84,7 +84,7 @@ const ChatSidebar = () => {
           </Button>
         </div>
       </div>
-      <ContactsList searchUser={searchUser} />
+      <ContactsList searchUser={searchUser} fetchDataAgain={fetchDataAgain} />
 
       <GroupModal open={isGroupModalOpen} toggle={handleGroupModal} title="Create Group Chat" />
 

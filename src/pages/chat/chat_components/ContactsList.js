@@ -6,8 +6,9 @@ import useDebounce from '../../../hooks/useDebounce';
 import { GetApiCall } from '../../../helper/axios';
 import { Toaster, toaster } from '../../../components/ui/toaster';
 import LazyImage from '../../../components/LazyImage';
+import { getSender } from '../../../helper/commonFunction';
 
-const ContactsList = React.memo(({ searchUser }) => {
+const ContactsList = React.memo(({ searchUser, fetchDataAgain }) => {
   const token = localStorage.getItem('access-token');
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
   const [loading, setLoading] = useState(false);
@@ -37,7 +38,7 @@ const ContactsList = React.memo(({ searchUser }) => {
   // Fetch contacts whenever the debounced search term changes
   useEffect(() => {
     fetchContacts(debouncedSearchUser);
-  }, [debouncedSearchUser, fetchContacts]);
+  }, [debouncedSearchUser, fetchContacts, fetchDataAgain]);
 
   if (loading) {
     return (
@@ -63,9 +64,6 @@ const ContactsList = React.memo(({ searchUser }) => {
     );
   }
 
-  const getSender = (loggedUser, users) => {
-    return users[0]?._id === loggedUser?._id ? users[1].name : users[0].name;
-  };
 
   return (
     <Stack className="chat-list" pt={2}>
@@ -78,7 +76,7 @@ const ContactsList = React.memo(({ searchUser }) => {
           px={3}
           py={2}
           borderRadius="lg"
-          key={index}
+          key={chat._id}
           className="chat-contact-user"
           display={'flex'}
         >

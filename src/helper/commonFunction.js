@@ -153,6 +153,9 @@ const isSameUser = (messages, m, i) => {
   return i > 0 && messages[i - 1].sender._id === m.sender._id;
 };
 
+const getSender = (loggedUser, users) => {
+  return users[0]?._id === loggedUser?._id ? users[1].name : users[0].name;
+};
 // function supportScript(data) {
 //    // eslint-disable-next-line no-use-before-define
 //    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date()
@@ -188,4 +191,5 @@ export {
   isLastMessage,
   isSameSender,
   isSameUser,
+  getSender
 };

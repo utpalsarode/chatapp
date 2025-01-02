@@ -9,6 +9,7 @@ import { ApiCall, GetApiCall } from '../../helper/axios';
 import { Avatar, AvatarGroup } from '../../components/ui/avatar';
 import { setChatState, setInitialUserData } from '../../redux/commonSlice';
 import { FaAngleDown, FaSearch, FaBell } from 'react-icons/fa';
+import { IoMdNotifications } from 'react-icons/io';
 import {
   Collapse,
   Navbar,
@@ -26,15 +27,18 @@ import {
   Button,
   Input,
 } from 'reactstrap';
+import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../../../src/components/ui/menu';
 import ProfileModal from '../../components/Modal';
 import { ChatState } from '../ChatProvider';
+import { getSender } from '../../helper/commonFunction';
 
 export const Chat = () => {
   const token = localStorage.getItem('access-token');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { selectedChat, user } = ChatState();
+  const { selectedChat, setSelectedChat, user, notification, setNotification } = ChatState();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [fetchDataAgain, setFetchDataAgain] = useState(false);
 
   const toggle = () => setIsProfileOpen(!isProfileOpen);
 
@@ -100,21 +104,54 @@ export const Chat = () => {
             </NavItem>
           </Nav>
         </Collapse> */}
-        <UncontrolledDropdown nav inNavbar>
-          <DropdownToggle nav>
-            <NavbarText>
-              <Avatar size="sm" name={user?.name} />
-            </NavbarText>
-          </DropdownToggle>
-          <DropdownMenu end>
-            <DropdownItem onClick={toggle}>Open Profile</DropdownItem>
-            <DropdownItem>Logout</DropdownItem>
-          </DropdownMenu>
-        </UncontrolledDropdown>
+        <div className="prof-notification">
+          <UncontrolledDropdown nav inNavbar>
+            <DropdownToggle nav>
+              <NavbarText data-count={notification?.length ? notification?.length : 0} className={`nav-notification-bar ${notification?.length ? 'active' : ''}`}>
+              <IoMdNotifications className='nav-notification-badge' size="30" name={user?.name} />
+              </NavbarText>
+            </DropdownToggle>
+            {notification && notification.length ? (
+              notification.map((not) => (
+                <DropdownMenu
+                  end
+                  key={not._id}
+                  onClick={() => {
+                    setSelectedChat(not.chat);
+                    setNotification((notification) => notification.filter((n) => n._id !== not._id));
+                  }}
+                >
+                  {not.chat.isGroupChat ? `New Message in ${not.chat.chatName}` : `New Message from ${getSender(user, not.chat.users)}`}
+                </DropdownMenu>
+              ))
+            ) : (
+              <DropdownMenu end className="empty-notifications">
+                No New Messages
+              </DropdownMenu>
+            )}
+          </UncontrolledDropdown>
+          <UncontrolledDropdown nav inNavbar>
+            <DropdownToggle nav>
+              <NavbarText>
+                <Avatar size="sm" name={user?.name} />
+              </NavbarText>
+            </DropdownToggle>
+            <DropdownMenu end>
+              <DropdownItem onClick={toggle}>Open Profile</DropdownItem>
+              <DropdownItem>Logout</DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
+        </div>
       </Navbar>
-      <div className={`chat-app ${selectedChat && Object.keys(selectedChat).length ? "show-chat" : ""}`}>
-        <ChatSidebar />
-        <div className="chat-content chat">{selectedChat && Object.keys(selectedChat).length ? <ChatWindow /> : <WelcomeMessage />}</div>
+      <div className={`chat-app ${selectedChat && Object.keys(selectedChat).length ? 'show-chat' : ''}`}>
+        <ChatSidebar fetchDataAgain={fetchDataAgain} />
+        <div className="chat-content chat">
+          {selectedChat && Object.keys(selectedChat).length ? (
+            <ChatWindow fetchDataAgain={fetchDataAgain} setFetchDataAgain={setFetchDataAgain} />
+          ) : (
+            <WelcomeMessage />
+          )}
+        </div>
       </div>
 
       <ProfileModal open={isProfileOpen} handleChange={toggle} title={'My Profile'} email={user?.email} src={user?.user_image} />

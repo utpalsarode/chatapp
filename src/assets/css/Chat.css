@@ -8,6 +8,10 @@ body {
   display: flex;
   justify-content: space-between;
   gap: 10px;
+  position: sticky;
+  top: 0;
+  background-color: #1f2029;
+  z-index: 999999999;
 }
 
 .input-search-contact {
@@ -78,6 +82,7 @@ body {
 }
 
 .chat-content {
+  position: relative;
   width: 68%;
   height: inherit;
 }
@@ -104,9 +109,35 @@ body {
 }
 
 .chat .chat-message {
+  position: relative;
   width: 100%;
   padding: 10px;
   background: #434660;
+}
+
+.prof-notification {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.nav-notification-bar.active::before {
+  content: attr(data-count);
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  display: flex;
+  color: white;
+  font-size: 10px;
+  align-items: center;
+  justify-content: center;
+  right: 50%;
+  border-radius: 50%;
+  margin-right: -7px;
+  transform: translateX(50%);
+  top: -2px;
+  background-color: #ea4444;
 }
 
 .chat-card {
@@ -214,7 +245,7 @@ body {
 .chat .chat-history {
   height: 510px;
   padding: 20px;
-  border-bottom: 2px solid #434650;
+  /* border-bottom: 2px solid #434650; */
   background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/1462889/pat.svg');
   overflow-y: scroll;
 }
@@ -400,6 +431,32 @@ body {
   font-weight: 600;
 }
 
+.typing-indicator {
+  position: absolute;
+  bottom: 30px;
+  left: 3%;
+  padding: 10px 20px;
+  background-color: transparent;
+  color: #333;
+  border-radius: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.5s ease;
+}
+
+/* When typing indicator is visible */
+.typing-indicator.show {
+  bottom: 30px;
+  left: 3%;
+  opacity: 1;
+  visibility: visible;
+}
+
+.empty-notifications {
+  padding: 0.5rem !important;
+  font-size: 0.9rem !important;
+}
+
 /* @media only screen and (max-width: 767px) {
     .chat-app .people-list {
         height: 465px;
@@ -477,5 +534,27 @@ body {
 
   .chat-app .chat-content .back-button {
     display: block; /* Show back button in chat window on mobile */
+  }
+}
+
+/* Extra Large Devices (Desktops) */
+@media screen and (min-width: 1024px) and (max-width: 1200px) {
+  .chat-app .people-list {
+    width: 30%; /* Maintain 25% for desktops */
+  }
+
+  .chat-app .chat-content {
+    width: 70%; /* Maintain 75% for desktops */
+  }
+}
+
+/* Ultra-Wide Screens */
+@media screen and (min-width: 1201px) {
+  .chat-app .people-list {
+    width: 25%; /* Narrow sidebar for ultra-wide screens */
+  }
+
+  .chat-app .chat-content {
+    width: 75%; /* Wider chat window */
   }
 }
