@@ -29,17 +29,24 @@ io.on('connection', (socket) => {
 
   socket.on("new message", (newMessage) => {
     let chat = newMessage.chat;
+    const senderId = newMessage.sender._id.toString();
+
     if (chat.isGroupChat) {
       // Handle group chat messages
       chat.users.forEach((user) => {
-        if (user._id !== newMessage.sender._id && onlineUsers.has(user._id)) {
-          socket.in(onlineUsers.get(user._id)).emit("message received", newMessage);
+        const userId = (typeof user === 'object' ? user._id : user).toString();
+        if (userId !== senderId && onlineUsers.has(userId)) {
+          socket.in(onlineUsers.get(userId)).emit("message received", newMessage);
         }
       });
     } else {
       // Handle one-to-one chat messages
-      const recipientId = chat.users.find((user) => user._id !== newMessage.sender._id);
-      if (onlineUsers.has(recipientId)) {
+      const recipient = chat.users.find((user) => {
+        const userId = (typeof user === 'object' ? user._id : user).toString();
+        return userId !== senderId;
+      });
+      const recipientId = recipient && (typeof recipient === 'object' ? recipient._id : recipient).toString();
+      if (recipientId && onlineUsers.has(recipientId)) {
         socket.in(onlineUsers.get(recipientId)).emit("message received", newMessage);
       }
     }
