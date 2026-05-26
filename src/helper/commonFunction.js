@@ -154,7 +154,8 @@ const isSameUser = (messages, m, i) => {
 };
 
 const getSender = (loggedUser, users) => {
-  return users[0]?._id === loggedUser?._id ? users[1].name : users[0].name;
+  const loggedUserId = loggedUser?._id || loggedUser?.id;
+  return users[0]?._id === loggedUserId ? users[1].name : users[0].name;
 };
 // function supportScript(data) {
 //    // eslint-disable-next-line no-use-before-define

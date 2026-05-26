@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { FiMoreVertical } from 'react-icons/fi';
 import { FaCamera, FaGear, FaImage, FaPaperPlane } from 'react-icons/fa6';
 import { UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle, Spinner, Button } from 'reactstrap';
@@ -18,9 +18,6 @@ import typingAnimeImage from '../../../assets/images/typingAnime.gif';
 import { nodeApi } from '../../../helper/commonApi';
 import { io } from 'socket.io-client';
 
-const ENDPOINT = 'http://localhost:5000';
-var socket, selectedChatCompare;
-
 const ChatWindow = ({ fetchDataAgain, setFetchDataAgain }) => {
   const { selectedChat, setSelectedChat, user, notification, setNotification } = ChatState();
   const token = localStorage.getItem('access-token');
@@ -32,30 +29,51 @@ const ChatWindow = ({ fetchDataAgain, setFetchDataAgain }) => {
   const [socketConnected, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  
-  useEffect(() => {
-    socket = io(ENDPOINT);
-    socket.emit('message', 'hello world.');
-    socket.emit('setup', user);
-    socket.on('connected', () => setSocketConnected(true));
-    socket.on('typing', () => setIsTyping(true));
-    socket.on('stop typing', () => setIsTyping(false));
-  }, [user]);
+
+  const socketRef = useRef(null);
+  const selectedChatCompareRef = useRef(null);
+  const typingTimerRef = useRef(null);
 
   useEffect(() => {
-    if (socket) {
-      socket.on('message received', (newMessage) => {
-        if (!selectedChatCompare || selectedChatCompare._id !== newMessage.chat._id) {
-          if (!notification.includes(newMessage)) {
-            setNotification((notification) => [newMessage, ...notification]);
-            setFetchDataAgain((fetchDataAgain) => !fetchDataAgain);
+    if (!user || !Object.keys(user).length) return;
+
+    const socket = io(nodeApi);
+    socketRef.current = socket;
+
+    socket.emit('setup', user);
+    socket.on('connected', () => {
+      setSocketConnected(true);
+      if (selectedChatCompareRef.current?._id) {
+        socket.emit('Join Chat', selectedChatCompareRef.current._id);
+      }
+    });
+    socket.on('typing', () => setIsTyping(true));
+    socket.on('stop typing', () => setIsTyping(false));
+
+    socket.on('message received', (newMessage) => {
+      setFetchDataAgain((prev) => !prev);
+      const selectedChatCompare = selectedChatCompareRef.current;
+      if (!selectedChatCompare || selectedChatCompare._id !== newMessage.chat._id) {
+        setNotification((prevNotifications) => {
+          if (!prevNotifications.some((n) => n._id === newMessage._id)) {
+            return [newMessage, ...prevNotifications];
           }
-        } else {
-          setMessages((messages) => [...messages, newMessage]);
-        }
-      });
-    }
-  }, []);
+          return prevNotifications;
+        });
+      } else {
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      }
+    });
+
+    return () => {
+      socket.off('connected');
+      socket.off('typing');
+      socket.off('stop typing');
+      socket.off('message received');
+      socket.disconnect();
+      setSocketConnected(false);
+    };
+  }, [user, setFetchDataAgain, setNotification]);
 
   useEffect(() => {
     const chatElement = document.querySelector('.chat-history');
@@ -68,13 +86,13 @@ const ChatWindow = ({ fetchDataAgain, setFetchDataAgain }) => {
     setLoading(true);
     let res = await GetApiCall('GET', `/messages?chatId=${selectedChat._id}`, { authentication: token });
     setMessages(res.data.status === 'success' && res.data.statusCode === 200 ? res.data.data : []);
-    socket.emit('Join Chat', selectedChat._id);
+    socketRef.current?.emit('Join Chat', selectedChat._id);
     setLoading(false);
   };
 
   const addMessage = async () => {
     if (!typeMessage) return;
-    socket.emit('stop typing', selectedChat._id);
+    socketRef.current?.emit('stop typing', selectedChat._id);
     const data = {
       chatId: selectedChat._id,
       message: typeMessage,
@@ -82,15 +100,16 @@ const ChatWindow = ({ fetchDataAgain, setFetchDataAgain }) => {
     let res = await ApiCall('POST', '/messages', data, { authentication: token });
     if (res.data.status === 'success' && res.data.statusCode === 200) {
       setTypeMessage('');
-      setMessages((messages) => [...messages, res.data.data]);
-      socket.emit('new message', res.data.data);
+      setMessages((prevMessages) => [...prevMessages, res.data.data]);
+      socketRef.current?.emit('new message', res.data.data);
+      setFetchDataAgain((prev) => !prev);
     }
   };
 
   useEffect(() => {
     if (selectedChat && Object.keys(selectedChat).length) {
       getAllMessages();
-      selectedChatCompare = selectedChat;
+      selectedChatCompareRef.current = selectedChat;
     }
   }, [selectedChat]);
 
@@ -112,22 +131,38 @@ const ChatWindow = ({ fetchDataAgain, setFetchDataAgain }) => {
 
     if (!typing) {
       setTyping(true);
-      socket.emit('typing', selectedChat._id);
+      socketRef.current?.emit('typing', selectedChat._id);
     }
 
     debounceStopTyping();
   };
 
-  const debounceStopTyping = (() => {
-    let timer;
+  const debounceStopTyping = useCallback(() => {
+    if (typingTimerRef.current) {
+      clearTimeout(typingTimerRef.current);
+    }
+    typingTimerRef.current = setTimeout(() => {
+      setTyping(false);
+      socketRef.current?.emit('stop typing', selectedChat._id);
+    }, 2000);
+  }, [selectedChat]);
+
+  useEffect(() => {
     return () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        setTyping(false);
-        socket.emit('stop typing', selectedChat._id);
-      }, 2000);
+      if (typingTimerRef.current) {
+        clearTimeout(typingTimerRef.current);
+      }
     };
-  })();
+  }, []);
+
+  const getChatAvatar = () => {
+    if (!selectedChat) return 'https://bootdey.com/img/Content/avatar/avatar2.png';
+    if (selectedChat.isGroupChat) {
+      return selectedChat.avatarImage || 'https://bootdey.com/img/Content/avatar/avatar1.png';
+    }
+    const otherUser = selectedChat.users?.find((u) => u._id !== user?.id);
+    return otherUser?.user_image || 'https://bootdey.com/img/Content/avatar/avatar2.png';
+  };
 
   return (
     <>
@@ -138,7 +173,7 @@ const ChatWindow = ({ fetchDataAgain, setFetchDataAgain }) => {
             <Button className="back-button" onClick={() => setSelectedChat({})}>
               <IoMdArrowBack size={20} />
             </Button>
-            <LazyImage src={'https://bootdey.com/img/Content/avatar/avatar2.png'} alt="avatar" height={'40px'} width={'40px'} />
+            <LazyImage src={getChatAvatar()} alt="avatar" height={'40px'} width={'40px'} />
             {/* <img src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="avatar" /> */}
             <div className="chat-about">
               <h6 className="mb-0">{selectedChat?.chatName}</h6>

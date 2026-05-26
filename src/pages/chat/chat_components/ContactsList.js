@@ -56,7 +56,13 @@ const ContactsList = React.memo(({ searchUser, fetchDataAgain }) => {
     );
   }
 
-  if (!chats?.length) {
+  const filteredChats = chats?.filter((chat) => {
+    if (!searchUser) return true;
+    const nameToCompare = !chat.isGroupChat ? getSender(user, chat.users) : chat.chatName;
+    return nameToCompare?.toLowerCase().includes(searchUser.toLowerCase());
+  }) ?? [];
+
+  if (!filteredChats.length) {
     return (
       <li className="clearfix py-4">
         <div className="text-center">No results found</div>
@@ -64,15 +70,14 @@ const ContactsList = React.memo(({ searchUser, fetchDataAgain }) => {
     );
   }
 
-
   return (
     <Stack className="chat-list" pt={2}>
-      {chats.map((chat, index) => (
+      {filteredChats.map((chat, index) => (
         <Box
           onClick={() => setSelectedChat(chat)}
           cursor="pointer"
-          bg={selectedChat === chat ? '#ffeba7' : 'transparent'}
-          color={selectedChat === chat ? 'black' : 'white'}
+          bg={selectedChat?._id === chat?._id ? '#ffeba7' : 'transparent'}
+          color={selectedChat?._id === chat?._id ? 'black' : 'white'}
           px={3}
           py={2}
           borderRadius="lg"

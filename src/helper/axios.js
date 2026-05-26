@@ -63,7 +63,7 @@ export const ApiCall = async (method, path, payload, header = null) => {
  * here flag is true when api call occure and user is not login
  */
 export const GetApiCall = async (method, path, header = null, flag = false) => {
-  if (!header['authentication'] && !flag) {
+  if ((!header || !header['authentication']) && !flag) {
     renewToken()
   } else {
     try {

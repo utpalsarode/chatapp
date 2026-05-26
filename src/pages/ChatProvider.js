@@ -11,10 +11,7 @@ const ChatProvider = ({ children }) => {
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('userData'));
     setUser(userData);
-
-    // if (!userData) window.location.href = '/signin';
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [localStorage.getItem('userData')]);
+  }, []);
 
   return (
     <ChatContext.Provider

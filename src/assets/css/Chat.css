@@ -11,7 +11,7 @@ body {
   position: sticky;
   top: 0;
   background-color: #1f2029;
-  z-index: 999999999;
+  /* z-index: 999999999; */
 }
 
 .input-search-contact {
@@ -409,7 +409,8 @@ body {
 }
 
 .chat-app .chat-content .back-button {
-  display: none; /* Hidden by default */
+  display: none;
+  /* Hidden by default */
   margin-bottom: 10px;
   padding: 10px;
   background-color: #ffeba7;
@@ -512,7 +513,8 @@ body {
 /* Media Query for Mobile Devices */
 @media screen and (max-width: 576px) {
   .chat-app {
-    flex-direction: column; /* Stack layout vertically */
+    flex-direction: column;
+    /* Stack layout vertically */
   }
 
   .chat-app .people-list {
@@ -524,7 +526,8 @@ body {
   }
 
   .chat-app.show-chat .people-list {
-    display: none; /* Hide chat list when showing chat window */
+    display: none;
+    /* Hide chat list when showing chat window */
   }
 
   .chat-app.show-chat .chat-content {
@@ -533,28 +536,33 @@ body {
   }
 
   .chat-app .chat-content .back-button {
-    display: block; /* Show back button in chat window on mobile */
+    display: block;
+    /* Show back button in chat window on mobile */
   }
 }
 
 /* Extra Large Devices (Desktops) */
 @media screen and (min-width: 1024px) and (max-width: 1200px) {
   .chat-app .people-list {
-    width: 30%; /* Maintain 25% for desktops */
+    width: 30%;
+    /* Maintain 25% for desktops */
   }
 
   .chat-app .chat-content {
-    width: 70%; /* Maintain 75% for desktops */
+    width: 70%;
+    /* Maintain 75% for desktops */
   }
 }
 
 /* Ultra-Wide Screens */
 @media screen and (min-width: 1201px) {
   .chat-app .people-list {
-    width: 25%; /* Narrow sidebar for ultra-wide screens */
+    width: 25%;
+    /* Narrow sidebar for ultra-wide screens */
   }
 
   .chat-app .chat-content {
-    width: 75%; /* Wider chat window */
+    width: 75%;
+    /* Wider chat window */
   }
 }
